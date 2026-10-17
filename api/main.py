@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -13,6 +14,16 @@ app = FastAPI(
     title="Autopark API",
     description="API для керування автобусним автопарком м.Одеси",
     version="1.0.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://127.0.0.1:5500",
+        "http://localhost:5500",
+    ],
+    allow_methods=["GET"],
+    allow_headers=["Accept", "Content-Type"],
 )
 
 app.include_router(companies_router)
@@ -43,7 +54,6 @@ def check_database():
         )
 
     
-
 
 
 
