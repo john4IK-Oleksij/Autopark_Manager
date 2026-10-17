@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101918">
+    <title>Водії — Автопарк</title>
+    <link rel="icon" href="favicon.ico?v=2" type="image/x-icon" sizes="any">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script type="module" src="js/drivers.js"></script>
+    <script type="module" src="js/navigation.js"></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="index.html" aria-label="Автопарк — головна">
+          <span class="brand-mark" aria-hidden="true">A</span>
+          <span>Автопарк</span>
+        </a>
+        <button class="menu-toggle" type="button" aria-label="Відкрити меню" aria-expanded="false" aria-controls="primary-navigation">
+          <span></span><span></span><span></span>
+        </button>
+        <nav class="main-nav" id="primary-navigation" aria-label="Головна навігація">
+          <a class="nav-link" href="index.html">Огляд</a>
+          <a class="nav-link" href="buses.html">Автобуси</a>
+          <a class="nav-link is-active" href="#drivers" aria-current="page">Водії</a>
+          <a class="nav-link" href="resources.html">Перевізники й маршрути</a>
+        </nav>
+        <a class="docs-link" href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer" aria-label="Документація API"><span class="docs-link-label">Документація API</span> <span aria-hidden="true">↗</span></a>
+      </header>
+
+      <main class="resource-page">
+        <section class="resource-intro" aria-labelledby="page-title">
+          <p class="eyebrow eyebrow-dark">Команда автопарку</p>
+          <h1 id="page-title">Водії</h1>
+          <p>Переглядайте водіїв і дані їхніх посвідчень.</p>
+        </section>
+
+        <section class="resource-panel" id="drivers" aria-labelledby="drivers-title">
+          <div class="resource-heading">
+            <div>
+              <p class="eyebrow eyebrow-dark">Керування персоналом</p>
+              <h2 id="drivers-title">Список водіїв <span class="resource-count" id="drivers-total"></span></h2>
+            </div>
+            <button class="button" id="refresh-drivers" type="button">Оновити список</button>
+          </div>
+
+          <div class="driver-controls">
+            <label class="form-field driver-search">
+              <span class="form-label">Пошук у поточній сторінці</span>
+              <input class="form-control" id="driver-search" type="search" placeholder="ПІБ, телефон, посвідчення або перевізник" autocomplete="off">
+              <span class="form-hint">Пошук застосовується лише до вже завантаженої сторінки.</span>
+            </label>
+            <label class="form-field driver-page-size">
+              <span class="form-label">Водіїв на сторінці</span>
+              <select class="form-control" id="page-size">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+              </select>
+            </label>
+          </div>
+
+          <p class="resource-state" id="drivers-state" role="status" aria-live="polite">Завантажуємо водіїв…</p>
+          <button class="button" id="retry-drivers" type="button" hidden>Спробувати ще раз</button>
+
+          <p class="driver-summary" id="drivers-summary" aria-live="polite"></p>
+          <div class="table-scroll" id="drivers-table-wrap" tabindex="0" aria-label="Таблиця водіїв; прокручуйте горизонтально за потреби" hidden>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th scope="col">ПІБ</th>
+                  <th scope="col">Телефон</th>
+                  <th scope="col">Посвідчення</th>
+                  <th scope="col">Перевізник</th>
+                </tr>
+              </thead>
+              <tbody id="drivers-rows"></tbody>
+            </table>
+          </div>
+
+          <nav class="driver-pagination" id="driver-pagination" aria-label="Сторінки списку водіїв" hidden>
+            <button class="button" id="previous-page" type="button">← Попередня</button>
+            <span class="driver-page-indicator" id="page-indicator" aria-live="polite"></span>
+            <button class="button" id="next-page" type="button">Наступна →</button>
+          </nav>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <a href="index.html">← Повернутися до огляду</a>
+        <a href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer">Відкрити Swagger UI</a>
+      </footer>
+    </div>
+  </body>
+</html>

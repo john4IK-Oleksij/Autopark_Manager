@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <script type="module" src="js/resources.js"></script>
+    <script type="module" src="js/navigation.js"></script>
   </head>
   <body>
     <div class="page-shell">
@@ -19,12 +20,16 @@
           <span class="brand-mark" aria-hidden="true">A</span>
           <span>Автопарк</span>
         </a>
-        <nav class="main-nav" aria-label="Головна навігація">
+        <button class="menu-toggle" type="button" aria-label="Відкрити меню" aria-expanded="false" aria-controls="primary-navigation">
+          <span></span><span></span><span></span>
+        </button>
+        <nav class="main-nav" id="primary-navigation" aria-label="Головна навігація">
           <a class="nav-link" href="index.html">Огляд</a>
           <a class="nav-link" href="buses.html">Автобуси</a>
+          <a class="nav-link" href="drivers.html">Водії</a>
           <a class="nav-link is-active" href="#companies" aria-current="page">Перевізники й маршрути</a>
         </nav>
-        <a class="docs-link" href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer">Документація API <span aria-hidden="true">↗</span></a>
+        <a class="docs-link" href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer" aria-label="Документація API"><span class="docs-link-label">Документація API</span> <span aria-hidden="true">↗</span></a>
       </header>
 
       <main class="resource-page">
