@@ -97,8 +97,9 @@ def update_bus(
 
 @router.delete("/{bus_id}", status_code=204)
 def delete_bus(bus_id: int, db: Session = Depends(get_db)):
-    result = db.execute(delete(Bus).where(Bus.id == bus_id))
-    if result.rowcount == 0:
+    bus = db.get(Bus, bus_id)
+    if bus is None:
         raise HTTPException(status_code=404, detail="Bus not found")
+    db.execute(delete(Bus).where(Bus.id == bus_id))
     db.commit()
     return Response(status_code=204)

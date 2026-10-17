@@ -78,10 +78,12 @@ def update_company(
 
 @router.delete("/{company_id}", status_code=204)
 def delete_company(company_id: int, db: Session = Depends(get_db)):
+    company = db.get(Company, company_id)
+    if company is None:
+        raise HTTPException(status_code=404, detail="Company not found")
+
     try:
-        result = db.execute(delete(Company).where(Company.id == company_id))
-        if result.rowcount == 0:
-            raise HTTPException(status_code=404, detail="Company not found")
+        db.execute(delete(Company).where(Company.id == company_id))
         db.commit()
     except IntegrityError:
         db.rollback()

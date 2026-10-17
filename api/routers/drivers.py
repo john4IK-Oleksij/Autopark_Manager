@@ -1,12 +1,17 @@
 
-from fastapi import APIRouter, Depends, HTTPException, Response
-from sqlalchemy import delete, select
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
+from sqlalchemy import delete, func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from dependencies import get_db
-from models import Company, Driver
-from schemas import DriverCreate, DriverResponse
+from models import Company, Driver, DriverRoute, Route
+from schemas import (
+    DriverCreate,
+    DriverPageResponse,
+    DriverResponse,
+    RouteResponse,
+)
 
 router = APIRouter(
     prefix="/drivers",
@@ -14,10 +19,29 @@ router = APIRouter(
 )
 
 
-@router.get("", response_model=list[DriverResponse])
-def get_drivers(db: Session = Depends(get_db)):
-    statement = select(Driver)
-    return db.execute(statement).scalars().all()
+@router.get("", response_model=DriverPageResponse)
+def get_drivers(
+    limit: int = Query(default=10, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    db: Session = Depends(get_db),
+):
+    total = db.scalar(select(func.count()).select_from(Driver)) or 0
+    statement = (
+        select(Driver)
+        .order_by(Driver.id)
+        .limit(limit)
+        .offset(offset)
+    )
+    items = [
+        DriverResponse.model_validate(driver)
+        for driver in db.execute(statement).scalars().all()
+    ]
+    return DriverPageResponse(
+        items=items,
+        total=total,
+        limit=limit,
+        offset=offset,
+    )
 
 
 @router.get("/{driver_id}", response_model=DriverResponse)
@@ -32,6 +56,20 @@ def get_driver(driver_id: int, db: Session = Depends(get_db)):
         )
 
     return driver
+
+
+@router.get("/{driver_id}/routes", response_model=list[RouteResponse])
+def get_driver_routes(driver_id: int, db: Session = Depends(get_db)):
+    if db.get(Driver, driver_id) is None:
+        raise HTTPException(status_code=404, detail="Driver not found")
+
+    statement = (
+        select(Route)
+        .join(DriverRoute, DriverRoute.route_id == Route.id)
+        .where(DriverRoute.driver_id == driver_id)
+        .order_by(Route.id)
+    )
+    return db.execute(statement).scalars().all()
 
 
 @router.post(
@@ -103,8 +141,9 @@ def update_driver(
 
 @router.delete("/{driver_id}", status_code=204)
 def delete_driver(driver_id: int, db: Session = Depends(get_db)):
-    result = db.execute(delete(Driver).where(Driver.id == driver_id))
-    if result.rowcount == 0:
+    driver = db.get(Driver, driver_id)
+    if driver is None:
         raise HTTPException(status_code=404, detail="Driver not found")
+    db.execute(delete(Driver).where(Driver.id == driver_id))
     db.commit()
     return Response(status_code=204)

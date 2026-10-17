@@ -98,10 +98,12 @@ def update_route(
 
 @router.delete("/{route_id}", status_code=204)
 def delete_route(route_id: int, db: Session = Depends(get_db)):
+    route = db.get(Route, route_id)
+    if route is None:
+        raise HTTPException(status_code=404, detail="Route not found")
+
     try:
-        result = db.execute(delete(Route).where(Route.id == route_id))
-        if result.rowcount == 0:
-            raise HTTPException(status_code=404, detail="Route not found")
+        db.execute(delete(Route).where(Route.id == route_id))
         db.commit()
     except IntegrityError:
         db.rollback()

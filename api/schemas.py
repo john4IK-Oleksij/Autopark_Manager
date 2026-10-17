@@ -75,6 +75,13 @@ class DriverResponse(BaseModel):
     company_id: int
 
 
+class DriverPageResponse(BaseModel):
+    items: list[DriverResponse]
+    total: int
+    limit: int
+    offset: int
+
+
 class DriverCreate(BaseModel):
     full_name: DriverName
     phone: DriverPhone
@@ -107,6 +114,5 @@ class DriverRouteResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     driver_id: int
     route_id: int
-
 
 
