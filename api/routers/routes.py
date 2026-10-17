@@ -1,6 +1,6 @@
 
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select
+from fastapi import APIRouter, Depends, HTTPException, Response
+from sqlalchemy import delete, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -49,15 +49,9 @@ def create_route(
             status_code=404,
             detail="Company not found",
         )
-    title = route_data.title.strip()
-    if not title:
-        raise HTTPException(
-            status_code=422,
-            detail="Route title cannot be empty",
-        )
     route = Route(
         number=route_data.number,
-        title=title,
+        title=route_data.title,
         distance_km=route_data.distance_km,
         company_id=route_data.company_id,
     )
@@ -72,3 +66,47 @@ def create_route(
             detail="Route with this number already exists",
         )
     return route
+
+
+@router.put("/{route_id}", response_model=RouteResponse)
+def update_route(
+    route_id: int,
+    route_data: RouteCreate,
+    db: Session = Depends(get_db),
+):
+    route = db.get(Route, route_id)
+    if route is None:
+        raise HTTPException(status_code=404, detail="Route not found")
+    if db.get(Company, route_data.company_id) is None:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    route.number = route_data.number
+    route.title = route_data.title
+    route.distance_km = route_data.distance_km
+    route.company_id = route_data.company_id
+    try:
+        db.commit()
+        db.refresh(route)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="Route with this number already exists",
+        )
+    return route
+
+
+@router.delete("/{route_id}", status_code=204)
+def delete_route(route_id: int, db: Session = Depends(get_db)):
+    try:
+        result = db.execute(delete(Route).where(Route.id == route_id))
+        if result.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Route not found")
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="Route cannot be deleted while it has driver assignments",
+        )
+    return Response(status_code=204)

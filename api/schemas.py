@@ -1,14 +1,52 @@
-from pydantic import BaseModel, ConfigDict, Field
+from typing import Annotated
+
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints
+
+
+CompanyName = Annotated[
+    str,
+    StringConstraints(strip_whitespace=True, min_length=2, max_length=120),
+]
+PhoneNumber = Annotated[
+    str,
+    StringConstraints(strip_whitespace=True, min_length=1, max_length=20),
+]
+PlateNumber = Annotated[
+    str,
+    StringConstraints(strip_whitespace=True, min_length=1, max_length=15),
+]
+BusModel = Annotated[
+    str,
+    StringConstraints(strip_whitespace=True, min_length=1, max_length=80),
+]
+DriverName = Annotated[
+    str,
+    StringConstraints(strip_whitespace=True, min_length=1, max_length=120),
+]
+DriverPhone = Annotated[
+    str,
+    StringConstraints(strip_whitespace=True, min_length=1, max_length=20),
+]
+LicenseNumber = Annotated[
+    str,
+    StringConstraints(strip_whitespace=True, min_length=1, max_length=20),
+]
+RouteTitle = Annotated[
+    str,
+    StringConstraints(strip_whitespace=True, min_length=1, max_length=120),
+]
 
 
 class CompanyResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     name: str
+    phone: str
 
 
 class CompanyCreate(BaseModel):
-    name: str = Field(min_length=2, max_length=100)
+    name: CompanyName
+    phone: PhoneNumber
 
 
 class BusResponse(BaseModel):
@@ -21,8 +59,8 @@ class BusResponse(BaseModel):
 
 
 class BusCreate(BaseModel):
-    plate_number: str = Field(min_length=1, max_length=15)
-    model: str = Field(min_length=1, max_length=80)
+    plate_number: PlateNumber
+    model: BusModel
     seats: int = Field(gt=0)
     company_id: int = Field(gt=0)
 
@@ -38,9 +76,9 @@ class DriverResponse(BaseModel):
 
 
 class DriverCreate(BaseModel):
-    full_name: str = Field(min_length=1, max_length=120)
-    phone: str = Field(min_length=1, max_length=20)
-    license_number: str = Field(min_length=1, max_length=20)
+    full_name: DriverName
+    phone: DriverPhone
+    license_number: LicenseNumber
     company_id: int = Field(gt=0)
 
     
@@ -55,7 +93,7 @@ class RouteResponse(BaseModel):
 
 class RouteCreate(BaseModel):
     number: int = Field(gt=0)
-    title: str = Field(min_length=1, max_length=120)
+    title: RouteTitle
     distance_km: int = Field(gt=0)
     company_id: int = Field(gt=0)
 
@@ -69,7 +107,6 @@ class DriverRouteResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     driver_id: int
     route_id: int
-
 
 
 

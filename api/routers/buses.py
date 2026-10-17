@@ -1,6 +1,6 @@
 
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select
+from fastapi import APIRouter, Depends, HTTPException, Response
+from sqlalchemy import delete, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -48,16 +48,9 @@ def create_bus(
             status_code=404,
             detail="Company not found",
         )
-    plate_number = bus_data.plate_number.strip()
-    model = bus_data.model.strip()
-    if not plate_number or not model:
-        raise HTTPException(
-            status_code=422,
-            detail="Plate number and model cannot be empty",
-        )
     bus = Bus(
-        plate_number=plate_number,
-        model=model,
+        plate_number=bus_data.plate_number,
+        model=bus_data.model,
         seats=bus_data.seats,
         company_id=bus_data.company_id,
     )
@@ -72,3 +65,40 @@ def create_bus(
             detail="Bus with this plate number already exists",
         )
     return bus
+
+
+@router.put("/{bus_id}", response_model=BusResponse)
+def update_bus(
+    bus_id: int,
+    bus_data: BusCreate,
+    db: Session = Depends(get_db),
+):
+    bus = db.get(Bus, bus_id)
+    if bus is None:
+        raise HTTPException(status_code=404, detail="Bus not found")
+    if db.get(Company, bus_data.company_id) is None:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    bus.plate_number = bus_data.plate_number
+    bus.model = bus_data.model
+    bus.seats = bus_data.seats
+    bus.company_id = bus_data.company_id
+    try:
+        db.commit()
+        db.refresh(bus)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="Bus with this plate number already exists",
+        )
+    return bus
+
+
+@router.delete("/{bus_id}", status_code=204)
+def delete_bus(bus_id: int, db: Session = Depends(get_db)):
+    result = db.execute(delete(Bus).where(Bus.id == bus_id))
+    if result.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Bus not found")
+    db.commit()
+    return Response(status_code=204)

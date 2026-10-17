@@ -10,7 +10,8 @@ class Company(Base):
     __tablename__ = "companies"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
+    name: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    phone: Mapped[str] = mapped_column(String(20), nullable=False)
     buses: Mapped[list[Bus]] = relationship(back_populates="company")
     routes: Mapped[list[Route]] = relationship(back_populates="company")
     drivers: Mapped[list[Driver]] = relationship(back_populates="company")

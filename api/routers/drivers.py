@@ -1,6 +1,6 @@
 
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select
+from fastapi import APIRouter, Depends, HTTPException, Response
+from sqlalchemy import delete, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -51,18 +51,10 @@ def create_driver(
             status_code=404,
             detail="Company not found",
         )
-    license_number = driver_data.license_number.strip()
-    full_name = driver_data.full_name.strip()
-    phone = driver_data.phone.strip()
-    if not license_number or not full_name or not phone:
-        raise HTTPException(
-            status_code=422,
-            detail="License number, full name, and phone cannot be empty",
-        )
     driver = Driver(
-        license_number=license_number,
-        full_name=full_name,
-        phone=phone,
+        license_number=driver_data.license_number,
+        full_name=driver_data.full_name,
+        phone=driver_data.phone,
         company_id=driver_data.company_id,
     )
 
@@ -79,3 +71,40 @@ def create_driver(
         )
 
     return driver
+
+
+@router.put("/{driver_id}", response_model=DriverResponse)
+def update_driver(
+    driver_id: int,
+    driver_data: DriverCreate,
+    db: Session = Depends(get_db),
+):
+    driver = db.get(Driver, driver_id)
+    if driver is None:
+        raise HTTPException(status_code=404, detail="Driver not found")
+    if db.get(Company, driver_data.company_id) is None:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    driver.full_name = driver_data.full_name
+    driver.phone = driver_data.phone
+    driver.license_number = driver_data.license_number
+    driver.company_id = driver_data.company_id
+    try:
+        db.commit()
+        db.refresh(driver)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="Driver with this license number already exists",
+        )
+    return driver
+
+
+@router.delete("/{driver_id}", status_code=204)
+def delete_driver(driver_id: int, db: Session = Depends(get_db)):
+    result = db.execute(delete(Driver).where(Driver.id == driver_id))
+    if result.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Driver not found")
+    db.commit()
+    return Response(status_code=204)

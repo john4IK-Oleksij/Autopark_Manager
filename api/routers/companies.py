@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select
+from fastapi import APIRouter, Depends, HTTPException, Response
+from sqlalchemy import delete, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -38,13 +38,7 @@ def create_company(
     company_data: CompanyCreate,
     db: Session = Depends(get_db),
 ):
-    name = company_data.name.strip()
-    if not name:
-        raise HTTPException(
-            status_code=422,
-            detail="Company name cannot be empty",
-        )
-    company = Company(name=name)
+    company = Company(name=company_data.name, phone=company_data.phone)
     db.add(company)
     try:
         db.commit()
@@ -56,3 +50,43 @@ def create_company(
             detail="Company with this name already exists",
         )
     return company
+
+
+@router.put("/{company_id}", response_model=CompanyResponse)
+def update_company(
+    company_id: int,
+    company_data: CompanyCreate,
+    db: Session = Depends(get_db),
+):
+    company = db.get(Company, company_id)
+    if company is None:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    company.name = company_data.name
+    company.phone = company_data.phone
+    try:
+        db.commit()
+        db.refresh(company)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="Company with this name already exists",
+        )
+    return company
+
+
+@router.delete("/{company_id}", status_code=204)
+def delete_company(company_id: int, db: Session = Depends(get_db)):
+    try:
+        result = db.execute(delete(Company).where(Company.id == company_id))
+        if result.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Company not found")
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="Company cannot be deleted while it has related records",
+        )
+    return Response(status_code=204)
