@@ -93,4 +93,11 @@ def remove_driver_from_route(
         )
 
     db.delete(assignment)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="Could not remove this assignment",
+        )
