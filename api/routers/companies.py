@@ -19,7 +19,11 @@ def get_companies(db: Session = Depends(get_db)):
     return db.execute(statement).scalars().all()
 
 
-@router.get("/{company_id}", response_model=CompanyResponse)
+@router.get(
+    "/{company_id}",
+    response_model=CompanyResponse,
+    responses={404: {"description": "Company not found"}},
+)
 def get_company(company_id: int, db: Session = Depends(get_db)):
     statement = select(Company).where(Company.id == company_id)
     company = db.execute(statement).scalar_one_or_none()
@@ -33,6 +37,7 @@ def get_company(company_id: int, db: Session = Depends(get_db)):
 
 @router.post("",response_model=CompanyResponse,
     status_code=201,
+    responses={409: {"description": "Company name already exists"}},
 )
 def create_company(
     company_data: CompanyCreate,
@@ -52,7 +57,14 @@ def create_company(
     return company
 
 
-@router.put("/{company_id}", response_model=CompanyResponse)
+@router.put(
+    "/{company_id}",
+    response_model=CompanyResponse,
+    responses={
+        404: {"description": "Company not found"},
+        409: {"description": "Company name already exists"},
+    },
+)
 def update_company(
     company_id: int,
     company_data: CompanyCreate,
@@ -76,7 +88,14 @@ def update_company(
     return company
 
 
-@router.delete("/{company_id}", status_code=204)
+@router.delete(
+    "/{company_id}",
+    status_code=204,
+    responses={
+        404: {"description": "Company not found"},
+        409: {"description": "Company has related records"},
+    },
+)
 def delete_company(company_id: int, db: Session = Depends(get_db)):
     company = db.get(Company, company_id)
     if company is None:

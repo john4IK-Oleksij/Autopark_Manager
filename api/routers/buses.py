@@ -20,7 +20,11 @@ def get_buses(db: Session = Depends(get_db)):
     return db.execute(statement).scalars().all()
 
 
-@router.get("/{bus_id}", response_model=BusResponse)
+@router.get(
+    "/{bus_id}",
+    response_model=BusResponse,
+    responses={404: {"description": "Bus not found"}},
+)
 def get_bus(bus_id: int, db: Session = Depends(get_db)):
     statement = select(Bus).where(Bus.id == bus_id)
     bus = db.execute(statement).scalar_one_or_none()
@@ -35,6 +39,10 @@ def get_bus(bus_id: int, db: Session = Depends(get_db)):
 
 @router.post("", response_model=BusResponse,
     status_code=201,
+    responses={
+        404: {"description": "Company not found"},
+        409: {"description": "Bus plate number already exists"},
+    },
 )
 def create_bus(
     bus_data: BusCreate,
@@ -67,7 +75,14 @@ def create_bus(
     return bus
 
 
-@router.put("/{bus_id}", response_model=BusResponse)
+@router.put(
+    "/{bus_id}",
+    response_model=BusResponse,
+    responses={
+        404: {"description": "Bus or company not found"},
+        409: {"description": "Bus plate number already exists"},
+    },
+)
 def update_bus(
     bus_id: int,
     bus_data: BusCreate,
@@ -95,11 +110,25 @@ def update_bus(
     return bus
 
 
-@router.delete("/{bus_id}", status_code=204)
+@router.delete(
+    "/{bus_id}",
+    status_code=204,
+    responses={
+        404: {"description": "Bus not found"},
+        409: {"description": "Bus has related records"},
+    },
+)
 def delete_bus(bus_id: int, db: Session = Depends(get_db)):
     bus = db.get(Bus, bus_id)
     if bus is None:
         raise HTTPException(status_code=404, detail="Bus not found")
-    db.execute(delete(Bus).where(Bus.id == bus_id))
-    db.commit()
+    try:
+        db.execute(delete(Bus).where(Bus.id == bus_id))
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="Bus cannot be deleted while it has related records",
+        )
     return Response(status_code=204)

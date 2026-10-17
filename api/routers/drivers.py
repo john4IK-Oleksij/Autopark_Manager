@@ -44,7 +44,11 @@ def get_drivers(
     )
 
 
-@router.get("/{driver_id}", response_model=DriverResponse)
+@router.get(
+    "/{driver_id}",
+    response_model=DriverResponse,
+    responses={404: {"description": "Driver not found"}},
+)
 def get_driver(driver_id: int, db: Session = Depends(get_db)):
     statement = select(Driver).where(Driver.id == driver_id)
     driver = db.execute(statement).scalar_one_or_none()
@@ -58,7 +62,11 @@ def get_driver(driver_id: int, db: Session = Depends(get_db)):
     return driver
 
 
-@router.get("/{driver_id}/routes", response_model=list[RouteResponse])
+@router.get(
+    "/{driver_id}/routes",
+    response_model=list[RouteResponse],
+    responses={404: {"description": "Driver not found"}},
+)
 def get_driver_routes(driver_id: int, db: Session = Depends(get_db)):
     if db.get(Driver, driver_id) is None:
         raise HTTPException(status_code=404, detail="Driver not found")
@@ -76,6 +84,10 @@ def get_driver_routes(driver_id: int, db: Session = Depends(get_db)):
     "",
     response_model=DriverResponse,
     status_code=201,
+    responses={
+        404: {"description": "Company not found"},
+        409: {"description": "Driver license number already exists"},
+    },
 )
 def create_driver(
     driver_data: DriverCreate,
@@ -111,7 +123,14 @@ def create_driver(
     return driver
 
 
-@router.put("/{driver_id}", response_model=DriverResponse)
+@router.put(
+    "/{driver_id}",
+    response_model=DriverResponse,
+    responses={
+        404: {"description": "Driver or company not found"},
+        409: {"description": "Driver license number already exists"},
+    },
+)
 def update_driver(
     driver_id: int,
     driver_data: DriverCreate,
@@ -139,11 +158,25 @@ def update_driver(
     return driver
 
 
-@router.delete("/{driver_id}", status_code=204)
+@router.delete(
+    "/{driver_id}",
+    status_code=204,
+    responses={
+        404: {"description": "Driver not found"},
+        409: {"description": "Driver has related records"},
+    },
+)
 def delete_driver(driver_id: int, db: Session = Depends(get_db)):
     driver = db.get(Driver, driver_id)
     if driver is None:
         raise HTTPException(status_code=404, detail="Driver not found")
-    db.execute(delete(Driver).where(Driver.id == driver_id))
-    db.commit()
+    try:
+        db.execute(delete(Driver).where(Driver.id == driver_id))
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="Driver cannot be deleted while it has related records",
+        )
     return Response(status_code=204)

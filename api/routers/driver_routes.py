@@ -24,6 +24,11 @@ def get_driver_routes(db: Session = Depends(get_db)):
     "",
     response_model=DriverRouteResponse,
     status_code=201,
+    responses={
+        404: {"description": "Driver or route not found"},
+        409: {"description": "Assignment already exists or cannot be created"},
+        422: {"description": "Driver and route must belong to the same company"},
+    },
 )
 def assign_driver_to_route(
     assignment_data: DriverRouteCreate,
@@ -78,7 +83,14 @@ def assign_driver_to_route(
     return assignment
 
 
-@router.delete("/{driver_id}/{route_id}", status_code=204)
+@router.delete(
+    "/{driver_id}/{route_id}",
+    status_code=204,
+    responses={
+        404: {"description": "Assignment not found"},
+        409: {"description": "Assignment could not be removed"},
+    },
+)
 def remove_driver_from_route(
     driver_id: int,
     route_id: int,

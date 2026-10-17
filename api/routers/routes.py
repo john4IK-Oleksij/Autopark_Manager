@@ -20,7 +20,11 @@ def get_routes(db: Session = Depends(get_db)):
     return db.execute(statement).scalars().all()
 
 
-@router.get("/{route_id}", response_model=RouteResponse)
+@router.get(
+    "/{route_id}",
+    response_model=RouteResponse,
+    responses={404: {"description": "Route not found"}},
+)
 def get_route(route_id: int, db: Session = Depends(get_db)):
     statement = select(Route).where(Route.id == route_id)
     route = db.execute(statement).scalar_one_or_none()
@@ -36,6 +40,10 @@ def get_route(route_id: int, db: Session = Depends(get_db)):
     "",
     response_model=RouteResponse,
     status_code=201,
+    responses={
+        404: {"description": "Company not found"},
+        409: {"description": "Route number already exists"},
+    },
 )
 def create_route(
     route_data: RouteCreate,
@@ -68,7 +76,14 @@ def create_route(
     return route
 
 
-@router.put("/{route_id}", response_model=RouteResponse)
+@router.put(
+    "/{route_id}",
+    response_model=RouteResponse,
+    responses={
+        404: {"description": "Route or company not found"},
+        409: {"description": "Route number already exists"},
+    },
+)
 def update_route(
     route_id: int,
     route_data: RouteCreate,
@@ -96,7 +111,14 @@ def update_route(
     return route
 
 
-@router.delete("/{route_id}", status_code=204)
+@router.delete(
+    "/{route_id}",
+    status_code=204,
+    responses={
+        404: {"description": "Route not found"},
+        409: {"description": "Route has driver assignments"},
+    },
+)
 def delete_route(route_id: int, db: Session = Depends(get_db)):
     route = db.get(Route, route_id)
     if route is None:

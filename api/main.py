@@ -27,7 +27,10 @@ def health_check():
     return {"status": "ok"}
 
 
-@app.get("/db-check")
+@app.get(
+    "/db-check",
+    responses={503: {"description": "Database connection failed"}},
+)
 def check_database():
     try:
         with engine.connect() as connection:
@@ -40,7 +43,6 @@ def check_database():
         )
 
     
-
 
 
 
