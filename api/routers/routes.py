@@ -1,0 +1,74 @@
+
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
+from dependencies import get_db
+from models import Company, Route
+from schemas import RouteCreate, RouteResponse
+
+router = APIRouter(
+    prefix="/routes",
+    tags=["Routes"],
+)
+
+
+@router.get("", response_model=list[RouteResponse])
+def get_routes(db: Session = Depends(get_db)):
+    statement = select(Route)
+    return db.execute(statement).scalars().all()
+
+
+@router.get("/{route_id}", response_model=RouteResponse)
+def get_route(route_id: int, db: Session = Depends(get_db)):
+    statement = select(Route).where(Route.id == route_id)
+    route = db.execute(statement).scalar_one_or_none()
+    if route is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Route not found",
+        )
+    return route
+
+
+@router.post(
+    "",
+    response_model=RouteResponse,
+    status_code=201,
+)
+def create_route(
+    route_data: RouteCreate,
+    db: Session = Depends(get_db),
+):
+    company = db.execute(
+        select(Company).where(Company.id == route_data.company_id)
+    ).scalar_one_or_none()
+    if company is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Company not found",
+        )
+    title = route_data.title.strip()
+    if not title:
+        raise HTTPException(
+            status_code=422,
+            detail="Route title cannot be empty",
+        )
+    route = Route(
+        number=route_data.number,
+        title=title,
+        distance_km=route_data.distance_km,
+        company_id=route_data.company_id,
+    )
+    db.add(route)
+    try:
+        db.commit()
+        db.refresh(route)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="Route with this number already exists",
+        )
+    return route
