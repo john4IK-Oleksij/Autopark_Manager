@@ -54,4 +54,21 @@ export const api = {
   get(path) {
     return request(path);
   },
+  post(path, body) {
+    return request(path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  },
+  put(path, body) {
+    return request(path, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  },
+  delete(path) {
+    return request(path, { method: "DELETE" });
+  },
 };

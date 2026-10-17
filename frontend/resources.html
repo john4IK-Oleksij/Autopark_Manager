@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101918">
+    <title>Перевізники та маршрути — Автопарк</title>
+    <link rel="icon" href="favicon.ico?v=2" type="image/x-icon" sizes="any">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script type="module" src="js/resources.js"></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="index.html" aria-label="Автопарк — головна">
+          <span class="brand-mark" aria-hidden="true">A</span>
+          <span>Автопарк</span>
+        </a>
+        <nav class="main-nav" aria-label="Головна навігація">
+          <a class="nav-link" href="index.html">Огляд</a>
+          <a class="nav-link is-active" href="#companies" aria-current="page">Перевізники й маршрути</a>
+        </nav>
+        <a class="docs-link" href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer">Документація API <span aria-hidden="true">↗</span></a>
+      </header>
+
+      <main class="resource-page">
+        <section class="resource-intro" aria-labelledby="page-title">
+          <p class="eyebrow eyebrow-dark">Керування автопарком</p>
+          <h1 id="page-title">Перевізники та маршрути</h1>
+          <p>Створюйте й оновлюйте перевізників та маршрути, що належать їм.</p>
+        </section>
+
+        <p class="resource-notice" id="resource-notice" role="status" aria-live="polite"></p>
+
+        <section class="resource-panel" id="companies" aria-labelledby="companies-title">
+          <div class="resource-heading">
+            <div>
+              <p class="eyebrow eyebrow-dark">Компанії</p>
+              <h2 id="companies-title">Перевізники</h2>
+            </div>
+            <button class="button button-primary" type="button" data-create="company">Додати перевізника</button>
+          </div>
+          <p class="resource-state" id="companies-state" role="status" aria-live="polite">Завантажуємо перевізників…</p>
+          <div class="table-scroll" id="companies-table-wrap" hidden>
+            <table class="data-table">
+              <thead>
+                <tr><th scope="col">Назва</th><th scope="col">Телефон</th><th scope="col">Дії</th></tr>
+              </thead>
+              <tbody id="companies-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="resource-panel" id="routes" aria-labelledby="routes-title">
+          <div class="resource-heading">
+            <div>
+              <p class="eyebrow eyebrow-dark">Маршрутна мережа</p>
+              <h2 id="routes-title">Маршрути</h2>
+            </div>
+            <button class="button button-primary" id="create-route" type="button" data-create="route">Додати маршрут</button>
+          </div>
+          <p class="resource-state" id="routes-state" role="status" aria-live="polite">Завантажуємо маршрути…</p>
+          <div class="table-scroll" id="routes-table-wrap" hidden>
+            <table class="data-table">
+              <thead>
+                <tr><th scope="col">№</th><th scope="col">Назва</th><th scope="col">Відстань, км</th><th scope="col">Перевізник</th><th scope="col">Дії</th></tr>
+              </thead>
+              <tbody id="routes-rows"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <a href="index.html">← Повернутися до огляду</a>
+        <a href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer">Відкрити Swagger UI</a>
+      </footer>
+    </div>
+
+    <dialog class="dialog resource-dialog" id="resource-dialog" aria-labelledby="dialog-title">
+      <form id="resource-form" novalidate>
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow eyebrow-dark" id="dialog-kicker">Дані</p>
+            <h2 id="dialog-title">Редагувати запис</h2>
+          </div>
+          <button class="icon-button" type="button" id="close-dialog" aria-label="Закрити">×</button>
+        </div>
+        <div class="resource-form-fields" id="form-fields"></div>
+        <p class="form-error dialog-error" id="dialog-error" role="alert" hidden></p>
+        <div class="dialog-actions">
+          <button class="button" type="button" id="cancel-dialog">Скасувати</button>
+          <button class="button button-primary" type="submit" id="save-resource">Зберегти</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>
