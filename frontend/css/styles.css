@@ -368,6 +368,26 @@ a:focus-visible,
   letter-spacing: -0.04em;
 }
 
+.resource-count {
+  color: var(--color-muted);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.bus-filters {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.5fr) minmax(180px, 1fr) auto;
+  align-items: end;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.bus-reset {
+  min-height: 44px;
+}
+
 .resource-state {
   margin: 0;
   color: var(--color-muted);
@@ -923,6 +943,15 @@ a:focus-visible,
   }
 
   .resource-heading > .button {
+    width: 100%;
+  }
+
+  .bus-filters {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .bus-reset {
     width: 100%;
   }
 

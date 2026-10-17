@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101918">
+    <title>Автобуси — Автопарк</title>
+    <link rel="icon" href="favicon.ico?v=2" type="image/x-icon" sizes="any">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script type="module" src="js/buses.js"></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="index.html" aria-label="Автопарк — головна">
+          <span class="brand-mark" aria-hidden="true">A</span>
+          <span>Автопарк</span>
+        </a>
+        <nav class="main-nav" aria-label="Головна навігація">
+          <a class="nav-link" href="index.html">Огляд</a>
+          <a class="nav-link is-active" href="#buses" aria-current="page">Автобуси</a>
+          <a class="nav-link" href="resources.html">Перевізники й маршрути</a>
+        </nav>
+        <a class="docs-link" href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer">Документація API <span aria-hidden="true">↗</span></a>
+      </header>
+
+      <main class="resource-page">
+        <section class="resource-intro" aria-labelledby="page-title">
+          <p class="eyebrow eyebrow-dark">Транспортний парк</p>
+          <h1 id="page-title">Автобуси</h1>
+          <p>Переглядайте та керуйте автобусами перевізників.</p>
+        </section>
+
+        <p class="resource-notice" id="bus-notice" role="status" aria-live="polite" hidden></p>
+
+        <section class="resource-panel" id="buses" aria-labelledby="buses-title">
+          <div class="resource-heading">
+            <div>
+              <p class="eyebrow eyebrow-dark">Транспортні засоби</p>
+              <h2 id="buses-title">Список автобусів <span class="resource-count" id="bus-count"></span></h2>
+            </div>
+            <button class="button button-primary" id="create-bus" type="button">Додати автобус</button>
+          </div>
+
+          <div class="bus-filters" aria-label="Пошук і фільтри автобусів">
+            <label class="form-field bus-search">
+              <span class="form-label">Пошук</span>
+              <input class="form-control" id="bus-search" type="search" placeholder="Номер, модель або перевізник">
+            </label>
+            <label class="form-field bus-company-filter">
+              <span class="form-label">Перевізник</span>
+              <select class="form-control" id="company-filter">
+                <option value="">Усі перевізники</option>
+              </select>
+            </label>
+            <button class="button bus-reset" id="reset-filters" type="button">Скинути фільтри</button>
+          </div>
+
+          <p class="resource-state" id="buses-state" role="status" aria-live="polite">Завантажуємо автобуси…</p>
+          <div class="table-scroll" id="buses-table-wrap" hidden>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th scope="col">Номерний знак</th>
+                  <th scope="col">Модель</th>
+                  <th scope="col">Місць</th>
+                  <th scope="col">Перевізник</th>
+                  <th scope="col">Дії</th>
+                </tr>
+              </thead>
+              <tbody id="buses-rows"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <a href="index.html">← Повернутися до огляду</a>
+        <a href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer">Відкрити Swagger UI</a>
+      </footer>
+    </div>
+
+    <dialog class="dialog resource-dialog" id="bus-dialog" aria-labelledby="dialog-title">
+      <form id="bus-form" novalidate>
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow eyebrow-dark">Транспортний парк</p>
+            <h2 id="dialog-title">Новий автобус</h2>
+          </div>
+          <button class="icon-button" type="button" id="close-dialog" aria-label="Закрити">×</button>
+        </div>
+        <div class="resource-form-fields">
+          <label class="form-field">
+            <span class="form-label">Номерний знак</span>
+            <input class="form-control" name="plate_number" type="text" maxlength="15" required>
+          </label>
+          <label class="form-field">
+            <span class="form-label">Модель</span>
+            <input class="form-control" name="model" type="text" maxlength="80" required>
+          </label>
+          <label class="form-field">
+            <span class="form-label">Кількість місць</span>
+            <input class="form-control" name="seats" type="number" min="1" step="1" inputmode="numeric" required>
+          </label>
+          <label class="form-field">
+            <span class="form-label">Перевізник</span>
+            <select class="form-control" name="company_id" required>
+              <option value="">Оберіть перевізника</option>
+            </select>
+          </label>
+        </div>
+        <p class="form-error dialog-error" id="dialog-error" role="alert" hidden></p>
+        <div class="dialog-actions">
+          <button class="button" type="button" id="cancel-dialog">Скасувати</button>
+          <button class="button button-primary" type="submit" id="save-bus">Зберегти</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>
