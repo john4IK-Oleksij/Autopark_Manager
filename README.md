@@ -32,6 +32,7 @@ autopark/
 │       ├── routes.py
 │       └── driver_routes.py
 └── frontend/
+    ├── favicon.ico
     ├── index.html
     ├── css/
     │   └── styles.css
@@ -39,10 +40,14 @@ autopark/
         ├── api.js
         ├── app.js
     └── static/
+        ├── old_error.jpg
         └── autopark_bg.jpg
 ```
 
 Frontend foundation містить стартову сторінку, спільний API-клієнт, адаптивну навігацію й базові стани інтерфейсу. Інші frontend-екрани додаються в наступних ітераціях.
+Спільні CSS-токени та стилі кнопок, полів, таблиць, бейджів, повідомлень і діалогів зберігаються у `frontend/css/styles.css`.
+`frontend/static/old_error.jpg` призначений для фону всіх повноекранних сторінок помилок, зокрема 404.
+`frontend/favicon.ico` — іконка автобуса із зеленим контуром на білому тлі.
 
 ## 3. Backend: наявні можливості
 
