@@ -14,76 +14,76 @@
     <script type="module" src="js/navigation.js"></script>
   </head>
   <body>
-    <div class="page-shell">
-      <header class="topbar">
-        <a class="brand" href="index.html" aria-label="Автопарк — головна">
-          <span class="brand-mark" aria-hidden="true">A</span>
+    <div class="page">
+      <header class="header">
+        <a class="header__brand" href="index.html" aria-label="Автопарк — головна">
+          <span class="header__brand-mark" aria-hidden="true">A</span>
           <span>Автопарк</span>
         </a>
-        <button class="menu-toggle" type="button" aria-label="Відкрити меню" aria-expanded="false" aria-controls="primary-navigation">
+        <button class="header__toggle" type="button" aria-label="Відкрити меню" aria-expanded="false" aria-controls="primary-navigation">
           <span></span><span></span><span></span>
         </button>
-        <nav class="main-nav" id="primary-navigation" aria-label="Головна навігація">
-          <a class="nav-link is-active" href="#overview" aria-current="page">Огляд</a>
-          <a class="nav-link" href="buses.html">Автобуси</a>
-          <a class="nav-link" href="drivers.html">Водії</a>
-          <a class="nav-link" href="resources.html">Перевізники й маршрути</a>
+        <nav class="nav" id="primary-navigation" aria-label="Головна навігація">
+          <a class="nav__link nav__link--active" href="#overview" aria-current="page">Огляд</a>
+          <a class="nav__link" href="buses.html">Автобуси</a>
+          <a class="nav__link" href="drivers.html">Водії</a>
+          <a class="nav__link" href="resources.html">Перевізники й маршрути</a>
         </nav>
-        <a class="docs-link" href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer" aria-label="Документація API"><span class="docs-link-label">Документація API</span> <span aria-hidden="true">↗</span></a>
+        <a class="header__docs" href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer" aria-label="Документація API"><span class="header__docs-label">Документація API</span> <span aria-hidden="true"><svg class="stats__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M10 21v-4h4v4"/></svg></span></a>
       </header>
 
       <main>
         <section class="hero" id="overview" aria-labelledby="hero-title">
-          <div class="hero-content">
-            <p class="eyebrow"><span class="eyebrow-dot"></span> Система керування автопарком</p>
+          <div class="hero__content">
+            <p class="eyebrow"><span class="eyebrow__dot"></span> Система керування автопарком</p>
             <h1 id="hero-title">Усе під контролем.<br><span>Кожен маршрут — на своєму місці.</span></h1>
-            <p class="hero-copy">Керуйте перевізниками, автобусами, маршрутами й водіями з одного простору.</p>
-            <a class="primary-link" href="resources.html">Переглянути ресурси <span aria-hidden="true">↓</span></a>
+            <p class="hero__copy">Керуйте перевізниками, автобусами, маршрутами й водіями з одного простору.</p>
+            <a class="hero__link" href="#resources">До огляду в цифрах <span aria-hidden="true">↓</span></a>
           </div>
-          <div class="hero-bottom">
+          <div class="hero__bottom">
             <div class="api-status" id="api-status" data-state="loading" role="status" aria-live="polite">
-              <span class="status-indicator" aria-hidden="true"></span>
-              <span class="status-message">Перевіряємо з’єднання з API…</span>
+              <span class="api-status__indicator" aria-hidden="true"></span>
+              <span class="api-status__message">Перевіряємо з’єднання з API…</span>
             </div>
-            <span class="hero-caption">Розумне керування. Чіткий рух.</span>
+            <span class="hero__caption">Розумне керування. Чіткий рух.</span>
           </div>
         </section>
 
-        <section class="overview-section" id="resources" aria-labelledby="resources-title">
-          <div class="section-heading">
+        <section class="overview" id="resources" aria-labelledby="resources-title">
+          <div class="overview__heading">
             <div>
-              <p class="eyebrow eyebrow-dark">Панель огляду</p>
+              <p class="eyebrow eyebrow--dark">Панель огляду</p>
               <h2 id="resources-title">Ваш автопарк у цифрах</h2>
             </div>
-            <button class="refresh-button" id="refresh-button" type="button">
+            <button class="overview__refresh" id="refresh-button" type="button">
               <span aria-hidden="true">↻</span> Оновити дані
             </button>
           </div>
-          <p class="section-message" id="overview-message" role="status" aria-live="polite">Завантажуємо дані…</p>
-          <div class="stats-grid" id="stats-grid" aria-label="Кількість ресурсів">
-            <a class="stat-card" href="resources.html#companies" data-resource="companies">
-              <span class="stat-icon icon-green" aria-hidden="true">↗</span>
-              <p class="stat-label">Перевізники</p>
-              <p class="stat-value" data-count>—</p>
-              <p class="stat-note" data-note>Очікуємо відповідь API</p>
+          <p class="overview__message" id="overview-message" role="status" aria-live="polite">Завантажуємо дані…</p>
+          <div class="stats" id="stats-grid" aria-label="Кількість ресурсів">
+            <a class="stats__card" href="resources.html#companies" data-resource="companies">
+              <span class="stats__icon stats__icon--green" aria-hidden="true"><svg class="stats__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M10 21v-4h4v4"/></svg></span>
+              <p class="stats__label">Перевізники</p>
+              <p class="stats__value" data-count>—</p>
+              <p class="stats__note" data-note>Очікуємо відповідь API</p>
             </a>
-            <a class="stat-card" href="buses.html" data-resource="buses">
-              <span class="stat-icon icon-pink" aria-hidden="true">▰</span>
-              <p class="stat-label">Автобуси</p>
-              <p class="stat-value" data-count>—</p>
-              <p class="stat-note" data-note>Очікуємо відповідь API</p>
+            <a class="stats__card" href="buses.html" data-resource="buses">
+              <span class="stats__icon stats__icon--pink" aria-hidden="true"><svg class="stats__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 11h16M8 17v3M16 17v3M8 14h.01M16 14h.01"/></svg></span>
+              <p class="stats__label">Автобуси</p>
+              <p class="stats__value" data-count>—</p>
+              <p class="stats__note" data-note>Очікуємо відповідь API</p>
             </a>
-            <a class="stat-card" href="resources.html#routes" data-resource="routes">
-              <span class="stat-icon icon-blue" aria-hidden="true">⌁</span>
-              <p class="stat-label">Маршрути</p>
-              <p class="stat-value" data-count>—</p>
-              <p class="stat-note" data-note>Очікуємо відповідь API</p>
+            <a class="stats__card" href="resources.html#routes" data-resource="routes">
+              <span class="stats__icon stats__icon--blue" aria-hidden="true"><svg class="stats__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7"/></svg></span>
+              <p class="stats__label">Маршрути</p>
+              <p class="stats__value" data-count>—</p>
+              <p class="stats__note" data-note>Очікуємо відповідь API</p>
             </a>
-            <a class="stat-card" href="drivers.html" data-resource="drivers">
-              <span class="stat-icon icon-orange" aria-hidden="true">◎</span>
-              <p class="stat-label">Водії</p>
-              <p class="stat-value" data-count>—</p>
-              <p class="stat-note" data-note>Очікуємо відповідь API</p>
+            <a class="stats__card" href="drivers.html" data-resource="drivers">
+              <span class="stats__icon stats__icon--orange" aria-hidden="true"><svg class="stats__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></span>
+              <p class="stats__label">Водії</p>
+              <p class="stats__value" data-count>—</p>
+              <p class="stats__note" data-note>Очікуємо відповідь API</p>
             </a>
           </div>
         </section>

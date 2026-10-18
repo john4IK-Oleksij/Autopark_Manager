@@ -14,59 +14,59 @@
     <script type="module" src="js/navigation.js"></script>
   </head>
   <body>
-    <div class="page-shell">
-      <header class="topbar">
-        <a class="brand" href="index.html" aria-label="Автопарк — головна">
-          <span class="brand-mark" aria-hidden="true">A</span>
+    <div class="page">
+      <header class="header">
+        <a class="header__brand" href="index.html" aria-label="Автопарк — головна">
+          <span class="header__brand-mark" aria-hidden="true">A</span>
           <span>Автопарк</span>
         </a>
-        <button class="menu-toggle" type="button" aria-label="Відкрити меню" aria-expanded="false" aria-controls="primary-navigation">
+        <button class="header__toggle" type="button" aria-label="Відкрити меню" aria-expanded="false" aria-controls="primary-navigation">
           <span></span><span></span><span></span>
         </button>
-        <nav class="main-nav" id="primary-navigation" aria-label="Головна навігація">
-          <a class="nav-link" href="index.html">Огляд</a>
-          <a class="nav-link is-active" href="#buses" aria-current="page">Автобуси</a>
-          <a class="nav-link" href="drivers.html">Водії</a>
-          <a class="nav-link" href="resources.html">Перевізники й маршрути</a>
+        <nav class="nav" id="primary-navigation" aria-label="Головна навігація">
+          <a class="nav__link" href="index.html">Огляд</a>
+          <a class="nav__link nav__link--active" href="#buses" aria-current="page">Автобуси</a>
+          <a class="nav__link" href="drivers.html">Водії</a>
+          <a class="nav__link" href="resources.html">Перевізники й маршрути</a>
         </nav>
-        <a class="docs-link" href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer" aria-label="Документація API"><span class="docs-link-label">Документація API</span> <span aria-hidden="true">↗</span></a>
+        <a class="header__docs" href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer" aria-label="Документація API"><span class="header__docs-label">Документація API</span> <span aria-hidden="true">↗</span></a>
       </header>
 
-      <main class="resource-page">
-        <section class="resource-intro" aria-labelledby="page-title">
-          <p class="eyebrow eyebrow-dark">Транспортний парк</p>
+      <main class="resource">
+        <section class="resource__intro" aria-labelledby="page-title">
+          <p class="eyebrow eyebrow--dark">Транспортний парк</p>
           <h1 id="page-title">Автобуси</h1>
           <p>Переглядайте та керуйте автобусами перевізників.</p>
         </section>
 
-        <p class="resource-notice" id="bus-notice" role="status" aria-live="polite" hidden></p>
+        <p class="notice" id="bus-notice" role="status" aria-live="polite" hidden></p>
 
-        <section class="resource-panel" id="buses" aria-labelledby="buses-title">
-          <div class="resource-heading">
+        <section class="resource__panel" id="buses" aria-labelledby="buses-title">
+          <div class="resource__heading">
             <div>
-              <p class="eyebrow eyebrow-dark">Транспортні засоби</p>
-              <h2 id="buses-title">Список автобусів <span class="resource-count" id="bus-count"></span></h2>
+              <p class="eyebrow eyebrow--dark">Транспортні засоби</p>
+              <h2 id="buses-title">Список автобусів <span class="resource__count" id="bus-count"></span></h2>
             </div>
-            <button class="button button-primary" id="create-bus" type="button">Додати автобус</button>
+            <button class="button button--primary" id="create-bus" type="button">Додати автобус</button>
           </div>
 
-          <div class="bus-filters" aria-label="Пошук і фільтри автобусів">
-            <label class="form-field bus-search">
-              <span class="form-label">Пошук</span>
-              <input class="form-control" id="bus-search" type="search" placeholder="Номер, модель або перевізник">
+          <div class="filters" aria-label="Пошук і фільтри автобусів">
+            <label class="form__field filters__search">
+              <span class="form__label">Пошук</span>
+              <input class="form__control" id="bus-search" type="search" placeholder="Номер, модель або перевізник">
             </label>
-            <label class="form-field bus-company-filter">
-              <span class="form-label">Перевізник</span>
-              <select class="form-control" id="company-filter">
+            <label class="form__field filters__company">
+              <span class="form__label">Перевізник</span>
+              <select class="form__control" id="company-filter">
                 <option value="">Усі перевізники</option>
               </select>
             </label>
-            <button class="button bus-reset" id="reset-filters" type="button">Скинути фільтри</button>
+            <button class="button filters__reset" id="reset-filters" type="button">Скинути фільтри</button>
           </div>
 
-          <p class="resource-state" id="buses-state" role="status" aria-live="polite">Завантажуємо автобуси…</p>
-          <div class="table-scroll" id="buses-table-wrap" hidden>
-            <table class="data-table">
+          <p class="resource__state" id="buses-state" role="status" aria-live="polite">Завантажуємо автобуси…</p>
+          <div class="table__scroll" id="buses-table-wrap" hidden>
+            <table class="table">
               <thead>
                 <tr>
                   <th scope="col">Номерний знак</th>
@@ -88,43 +88,43 @@
       </footer>
     </div>
 
-    <dialog class="dialog resource-dialog" id="bus-dialog" aria-labelledby="dialog-title">
+    <dialog class="dialog dialog--resource" id="bus-dialog" aria-labelledby="dialog-title">
       <form id="bus-form" novalidate>
-        <div class="dialog-heading">
+        <div class="dialog__heading">
           <div>
-            <p class="eyebrow eyebrow-dark">Транспортний парк</p>
+            <p class="eyebrow eyebrow--dark">Транспортний парк</p>
             <h2 id="dialog-title">Новий автобус</h2>
           </div>
-          <button class="icon-button" type="button" id="close-dialog" aria-label="Закрити">×</button>
+          <button class="dialog__close" type="button" id="close-dialog" aria-label="Закрити">×</button>
         </div>
-        <div class="resource-form-fields">
-          <label class="form-field">
-            <span class="form-label">Номерний знак</span>
-            <input class="form-control" name="plate_number" type="text" minlength="4" maxlength="15" required>
-            <span class="form-error" data-error-for="plate_number" hidden></span>
+        <div class="dialog__fields">
+          <label class="form__field">
+            <span class="form__label">Номерний знак</span>
+            <input class="form__control" name="plate_number" type="text" minlength="4" maxlength="15" required>
+            <span class="form__error" data-error-for="plate_number" hidden></span>
           </label>
-          <label class="form-field">
-            <span class="form-label">Модель</span>
-            <input class="form-control" name="model" type="text" minlength="2" maxlength="80" required>
-            <span class="form-error" data-error-for="model" hidden></span>
+          <label class="form__field">
+            <span class="form__label">Модель</span>
+            <input class="form__control" name="model" type="text" minlength="2" maxlength="80" required>
+            <span class="form__error" data-error-for="model" hidden></span>
           </label>
-          <label class="form-field">
-            <span class="form-label">Кількість місць</span>
-            <input class="form-control" name="seats" type="number" min="10" max="120" step="1" inputmode="numeric" required>
-            <span class="form-error" data-error-for="seats" hidden></span>
+          <label class="form__field">
+            <span class="form__label">Кількість місць</span>
+            <input class="form__control" name="seats" type="number" min="10" max="120" step="1" inputmode="numeric" required>
+            <span class="form__error" data-error-for="seats" hidden></span>
           </label>
-          <label class="form-field">
-            <span class="form-label">Перевізник</span>
-            <select class="form-control" name="company_id" required>
+          <label class="form__field">
+            <span class="form__label">Перевізник</span>
+            <select class="form__control" name="company_id" required>
               <option value="">Оберіть перевізника</option>
             </select>
-            <span class="form-error" data-error-for="company_id" hidden></span>
+            <span class="form__error" data-error-for="company_id" hidden></span>
           </label>
         </div>
-        <p class="form-error dialog-error" id="dialog-error" role="alert" hidden></p>
-        <div class="dialog-actions">
+        <p class="form__error dialog__error" id="dialog-error" role="alert" hidden></p>
+        <div class="dialog__actions">
           <button class="button" type="button" id="cancel-dialog">Скасувати</button>
-          <button class="button button-primary" type="submit" id="save-bus">Зберегти</button>
+          <button class="button button--primary" type="submit" id="save-bus">Зберегти</button>
         </div>
       </form>
     </dialog>

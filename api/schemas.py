@@ -3,13 +3,18 @@ from typing import Annotated
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
 
+# Назви мають містити літеру, телефон — лише цифри та + ( ) -, посвідчення — цифру.
+LETTER_PATTERN = r"\p{L}"
+DIGIT_PATTERN = r"\d"
+PHONE_PATTERN = r"^\+?[0-9 ()\-]+$"
+
 CompanyName = Annotated[
     str,
-    StringConstraints(strip_whitespace=True, min_length=2, max_length=120),
+    StringConstraints(strip_whitespace=True, min_length=2, max_length=120, pattern=LETTER_PATTERN),
 ]
 PhoneNumber = Annotated[
     str,
-    StringConstraints(strip_whitespace=True, min_length=7, max_length=20),
+    StringConstraints(strip_whitespace=True, min_length=7, max_length=20, pattern=PHONE_PATTERN),
 ]
 PlateNumber = Annotated[
     str,
@@ -25,15 +30,15 @@ DriverName = Annotated[
 ]
 DriverPhone = Annotated[
     str,
-    StringConstraints(strip_whitespace=True, min_length=7, max_length=20),
+    StringConstraints(strip_whitespace=True, min_length=7, max_length=20, pattern=PHONE_PATTERN),
 ]
 LicenseNumber = Annotated[
     str,
-    StringConstraints(strip_whitespace=True, min_length=5, max_length=20),
+    StringConstraints(strip_whitespace=True, min_length=5, max_length=20, pattern=DIGIT_PATTERN),
 ]
 RouteTitle = Annotated[
     str,
-    StringConstraints(strip_whitespace=True, min_length=3, max_length=120),
+    StringConstraints(strip_whitespace=True, min_length=3, max_length=120, pattern=LETTER_PATTERN),
 ]
 
 

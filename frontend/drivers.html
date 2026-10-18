@@ -14,54 +14,54 @@
     <script type="module" src="js/navigation.js"></script>
   </head>
   <body>
-    <div class="page-shell">
-      <header class="topbar">
-        <a class="brand" href="index.html" aria-label="Автопарк — головна">
-          <span class="brand-mark" aria-hidden="true">A</span>
+    <div class="page">
+      <header class="header">
+        <a class="header__brand" href="index.html" aria-label="Автопарк — головна">
+          <span class="header__brand-mark" aria-hidden="true">A</span>
           <span>Автопарк</span>
         </a>
-        <button class="menu-toggle" type="button" aria-label="Відкрити меню" aria-expanded="false" aria-controls="primary-navigation">
+        <button class="header__toggle" type="button" aria-label="Відкрити меню" aria-expanded="false" aria-controls="primary-navigation">
           <span></span><span></span><span></span>
         </button>
-        <nav class="main-nav" id="primary-navigation" aria-label="Головна навігація">
-          <a class="nav-link" href="index.html">Огляд</a>
-          <a class="nav-link" href="buses.html">Автобуси</a>
-          <a class="nav-link is-active" href="#drivers" aria-current="page">Водії</a>
-          <a class="nav-link" href="resources.html">Перевізники й маршрути</a>
+        <nav class="nav" id="primary-navigation" aria-label="Головна навігація">
+          <a class="nav__link" href="index.html">Огляд</a>
+          <a class="nav__link" href="buses.html">Автобуси</a>
+          <a class="nav__link nav__link--active" href="#drivers" aria-current="page">Водії</a>
+          <a class="nav__link" href="resources.html">Перевізники й маршрути</a>
         </nav>
-        <a class="docs-link" href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer" aria-label="Документація API"><span class="docs-link-label">Документація API</span> <span aria-hidden="true">↗</span></a>
+        <a class="header__docs" href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer" aria-label="Документація API"><span class="header__docs-label">Документація API</span> <span aria-hidden="true">↗</span></a>
       </header>
 
-      <main class="resource-page">
-        <section class="resource-intro" aria-labelledby="page-title">
-          <p class="eyebrow eyebrow-dark">Команда автопарку</p>
+      <main class="resource">
+        <section class="resource__intro" aria-labelledby="page-title">
+          <p class="eyebrow eyebrow--dark">Команда автопарку</p>
           <h1 id="page-title">Водії</h1>
           <p>Керуйте водіями та їхніми допусками до маршрутів.</p>
         </section>
 
-        <p class="resource-notice" id="driver-notice" role="status" aria-live="polite" hidden></p>
+        <p class="notice" id="driver-notice" role="status" aria-live="polite" hidden></p>
 
-        <section class="resource-panel" id="drivers" aria-labelledby="drivers-title">
-          <div class="resource-heading">
+        <section class="resource__panel" id="drivers" aria-labelledby="drivers-title">
+          <div class="resource__heading">
             <div>
-              <p class="eyebrow eyebrow-dark">Керування персоналом</p>
-              <h2 id="drivers-title">Список водіїв <span class="resource-count" id="drivers-total"></span></h2>
+              <p class="eyebrow eyebrow--dark">Керування персоналом</p>
+              <h2 id="drivers-title">Список водіїв <span class="resource__count" id="drivers-total"></span></h2>
             </div>
-            <div class="resource-heading-actions">
+            <div class="resource__actions">
               <button class="button" id="refresh-drivers" type="button">Оновити список</button>
-              <button class="button button-primary" id="create-driver" type="button">Додати водія</button>
+              <button class="button button--primary" id="create-driver" type="button">Додати водія</button>
             </div>
           </div>
 
-          <div class="driver-controls">
-            <label class="form-field driver-search">
-              <span class="form-label">Пошук у поточній сторінці</span>
-              <input class="form-control" id="driver-search" type="search" placeholder="ПІБ, телефон, посвідчення або перевізник" autocomplete="off">
-              <span class="form-hint">Пошук застосовується лише до вже завантаженої сторінки.</span>
+          <div class="drivers__controls">
+            <label class="form__field drivers__search">
+              <span class="form__label">Пошук у поточній сторінці</span>
+              <input class="form__control" id="driver-search" type="search" placeholder="ПІБ, телефон, посвідчення або перевізник" autocomplete="off">
+              <span class="form__hint">Пошук застосовується лише до вже завантаженої сторінки.</span>
             </label>
-            <label class="form-field driver-page-size">
-              <span class="form-label">Водіїв на сторінці</span>
-              <select class="form-control" id="page-size">
+            <label class="form__field drivers__page-size">
+              <span class="form__label">Водіїв на сторінці</span>
+              <select class="form__control" id="page-size">
                 <option value="10">10</option>
                 <option value="20">20</option>
                 <option value="50">50</option>
@@ -69,12 +69,12 @@
             </label>
           </div>
 
-          <p class="resource-state" id="drivers-state" role="status" aria-live="polite">Завантажуємо водіїв…</p>
+          <p class="resource__state" id="drivers-state" role="status" aria-live="polite">Завантажуємо водіїв…</p>
           <button class="button" id="retry-drivers" type="button" hidden>Спробувати ще раз</button>
 
-          <p class="driver-summary" id="drivers-summary" aria-live="polite"></p>
-          <div class="table-scroll" id="drivers-table-wrap" tabindex="0" aria-label="Таблиця водіїв; прокручуйте горизонтально за потреби" hidden>
-            <table class="data-table">
+          <p class="drivers__summary" id="drivers-summary" aria-live="polite"></p>
+          <div class="table__scroll" id="drivers-table-wrap" tabindex="0" aria-label="Таблиця водіїв; прокручуйте горизонтально за потреби" hidden>
+            <table class="table">
               <thead>
                 <tr>
                   <th scope="col">ПІБ</th>
@@ -88,9 +88,9 @@
             </table>
           </div>
 
-          <nav class="driver-pagination" id="driver-pagination" aria-label="Сторінки списку водіїв" hidden>
+          <nav class="pagination" id="driver-pagination" aria-label="Сторінки списку водіїв" hidden>
             <button class="button" id="previous-page" type="button">← Попередня</button>
-            <span class="driver-page-indicator" id="page-indicator" aria-live="polite"></span>
+            <span class="pagination__indicator" id="page-indicator" aria-live="polite"></span>
             <button class="button" id="next-page" type="button">Наступна →</button>
           </nav>
         </section>
@@ -102,43 +102,43 @@
       </footer>
     </div>
 
-    <dialog class="dialog resource-dialog" id="driver-dialog" aria-labelledby="dialog-title">
+    <dialog class="dialog dialog--resource" id="driver-dialog" aria-labelledby="dialog-title">
       <form id="driver-form" novalidate>
-        <div class="dialog-heading">
+        <div class="dialog__heading">
           <div>
-            <p class="eyebrow eyebrow-dark">Команда автопарку</p>
+            <p class="eyebrow eyebrow--dark">Команда автопарку</p>
             <h2 id="dialog-title">Новий водій</h2>
           </div>
-          <button class="icon-button" type="button" id="close-dialog" aria-label="Закрити">×</button>
+          <button class="dialog__close" type="button" id="close-dialog" aria-label="Закрити">×</button>
         </div>
-        <div class="resource-form-fields">
-          <label class="form-field">
-            <span class="form-label">ПІБ</span>
-            <input class="form-control" name="full_name" type="text" minlength="3" maxlength="120" required>
-            <span class="form-error" data-error-for="full_name" hidden></span>
+        <div class="dialog__fields">
+          <label class="form__field">
+            <span class="form__label">ПІБ</span>
+            <input class="form__control" name="full_name" type="text" minlength="3" maxlength="120" required>
+            <span class="form__error" data-error-for="full_name" hidden></span>
           </label>
-          <label class="form-field">
-            <span class="form-label">Телефон</span>
-            <input class="form-control" name="phone" type="tel" minlength="7" maxlength="20" required>
-            <span class="form-error" data-error-for="phone" hidden></span>
+          <label class="form__field">
+            <span class="form__label">Телефон</span>
+            <input class="form__control" name="phone" type="tel" minlength="7" maxlength="20" required>
+            <span class="form__error" data-error-for="phone" hidden></span>
           </label>
-          <label class="form-field">
-            <span class="form-label">Номер посвідчення</span>
-            <input class="form-control" name="license_number" type="text" minlength="5" maxlength="20" required>
-            <span class="form-error" data-error-for="license_number" hidden></span>
+          <label class="form__field">
+            <span class="form__label">Номер посвідчення</span>
+            <input class="form__control" name="license_number" type="text" minlength="5" maxlength="20" required>
+            <span class="form__error" data-error-for="license_number" hidden></span>
           </label>
-          <label class="form-field">
-            <span class="form-label">Перевізник</span>
-            <select class="form-control" name="company_id" required>
+          <label class="form__field">
+            <span class="form__label">Перевізник</span>
+            <select class="form__control" name="company_id" required>
               <option value="">Оберіть перевізника</option>
             </select>
-            <span class="form-error" data-error-for="company_id" hidden></span>
+            <span class="form__error" data-error-for="company_id" hidden></span>
           </label>
         </div>
-        <p class="form-error dialog-error" id="dialog-error" role="alert" hidden></p>
-        <div class="dialog-actions">
+        <p class="form__error dialog__error" id="dialog-error" role="alert" hidden></p>
+        <div class="dialog__actions">
           <button class="button" type="button" id="cancel-dialog">Скасувати</button>
-          <button class="button button-primary" type="submit" id="save-driver">Зберегти</button>
+          <button class="button button--primary" type="submit" id="save-driver">Зберегти</button>
         </div>
       </form>
     </dialog>

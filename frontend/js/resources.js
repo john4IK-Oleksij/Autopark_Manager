@@ -1,4 +1,5 @@
 import { api, ApiError } from "./api.js";
+import { confirmAction, decorateAction, LETTER_PATTERN, PHONE_MESSAGE, PHONE_PATTERN, showBanner } from "./ui.js";
 
 const companiesState = document.querySelector("#companies-state");
 const companiesTable = document.querySelector("#companies-table-wrap");
@@ -26,11 +27,11 @@ function appendCell(row, value) {
 function addAction(row, label, action, id, variant = "") {
   const cell = row.lastElementChild ?? row.insertCell();
   const button = document.createElement("button");
-  button.className = variant ? `button table-action ${variant}` : "button table-action";
+  button.className = variant ? `button button--compact ${variant}` : "button button--compact";
   button.type = "button";
   button.dataset.action = action;
   button.dataset.id = String(id);
-  button.textContent = label;
+  decorateAction(button, label, action.startsWith("edit") ? "edit" : "delete");
   cell.append(button);
 }
 
@@ -50,7 +51,7 @@ function renderCompanies() {
     addActionsCell(
       row,
       ["Змінити", "edit-company", company.id],
-      ["Видалити", "delete-company", company.id, "button-danger"],
+      ["Видалити", "delete-company", company.id, "button--danger"],
     );
     companiesRows.append(row);
   }
@@ -74,7 +75,7 @@ function renderRoutes() {
     addActionsCell(
       row,
       ["Змінити", "edit-route", route.id],
-      ["Видалити", "delete-route", route.id, "button-danger"],
+      ["Видалити", "delete-route", route.id, "button--danger"],
     );
     routesRows.append(row);
   }
@@ -122,6 +123,11 @@ async function loadRoutes() {
 }
 
 function showNotice(message, variant = "success") {
+  if (variant === "success") {
+    notice.hidden = true;
+    showBanner(message);
+    return;
+  }
   notice.hidden = false;
   notice.dataset.variant = variant;
   notice.textContent = message;
@@ -141,9 +147,21 @@ function getErrorMessage(error, resource) {
 }
 
 const FIELD_RULES = {
-  name: { label: "Назва перевізника", min: 2, max: 120 },
-  phone: { label: "Телефон", min: 7, max: 20 },
-  title: { label: "Назва маршруту", min: 3, max: 120 },
+  name: {
+    label: "Назва перевізника",
+    min: 2,
+    max: 120,
+    pattern: LETTER_PATTERN,
+    patternMessage: "Назва перевізника не може складатися лише з цифр чи символів.",
+  },
+  phone: { label: "Телефон", min: 7, max: 20, pattern: PHONE_PATTERN, patternMessage: PHONE_MESSAGE },
+  title: {
+    label: "Назва маршруту",
+    min: 3,
+    max: 120,
+    pattern: LETTER_PATTERN,
+    patternMessage: "Назва маршруту не може складатися лише з цифр чи символів.",
+  },
 };
 const NUMBER_RULES = {
   number: { label: "Номер маршруту", min: 1, max: 2147483647 },
@@ -173,9 +191,12 @@ function validateForm(values) {
   };
   for (const [name, rule] of Object.entries(FIELD_RULES)) {
     if (!(name in values)) continue;
-    const length = String(values[name]).trim().length;
+    const text = String(values[name]).trim();
+    const length = text.length;
     if (length < rule.min || length > rule.max) {
       fail(name, `${rule.label}: від ${rule.min} до ${rule.max} символів.`);
+    } else if (rule.pattern && !rule.pattern.test(text)) {
+      fail(name, rule.patternMessage);
     }
   }
   for (const [name, rule] of Object.entries(NUMBER_RULES)) {
@@ -204,17 +225,17 @@ function showSaveError(error, resource) {
 
 function makeField(labelText, name, type, value, { required = true, min, max, options } = {}) {
   const wrapper = document.createElement("label");
-  wrapper.className = "form-field";
+  wrapper.className = "form__field";
   const label = document.createElement("span");
-  label.className = "form-label";
+  label.className = "form__label";
   label.textContent = labelText;
   const fieldError = document.createElement("span");
-  fieldError.className = "form-error";
+  fieldError.className = "form__error";
   fieldError.dataset.errorFor = name;
   fieldError.hidden = true;
 
   const input = options ? document.createElement("select") : document.createElement("input");
-  input.className = "form-control";
+  input.className = "form__control";
   input.name = name;
   input.required = required;
   if (options) {
@@ -283,7 +304,7 @@ async function deleteRecord(resource, id) {
   const isCompany = resource === "company";
   const record = (isCompany ? companies : routes).find((item) => item.id === id);
   const label = isCompany ? record?.name : `маршрут №${record?.number}`;
-  if (!window.confirm(`Видалити ${label ?? "цей запис"}?`)) return;
+  if (!(await confirmAction(`Видалити ${label ?? "цей запис"}?`))) return;
 
   try {
     await api.delete(`/${isCompany ? "companies" : "routes"}/${id}`);
@@ -377,4 +398,12 @@ dialog.addEventListener("click", (event) => {
   if (event.target === dialog) closeDialog();
 });
 
+function applyView() {
+  const view = window.location.hash.slice(1);
+  document.querySelector("#companies").hidden = view === "routes";
+  document.querySelector("#routes").hidden = view === "companies";
+}
+
+window.addEventListener("hashchange", applyView);
+applyView();
 void Promise.all([loadCompanies(), loadRoutes()]);

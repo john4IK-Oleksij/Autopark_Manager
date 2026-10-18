@@ -14,44 +14,44 @@
     <script type="module" src="js/navigation.js"></script>
   </head>
   <body>
-    <div class="page-shell">
-      <header class="topbar">
-        <a class="brand" href="index.html" aria-label="Автопарк — головна">
-          <span class="brand-mark" aria-hidden="true">A</span>
+    <div class="page">
+      <header class="header">
+        <a class="header__brand" href="index.html" aria-label="Автопарк — головна">
+          <span class="header__brand-mark" aria-hidden="true">A</span>
           <span>Автопарк</span>
         </a>
-        <button class="menu-toggle" type="button" aria-label="Відкрити меню" aria-expanded="false" aria-controls="primary-navigation">
+        <button class="header__toggle" type="button" aria-label="Відкрити меню" aria-expanded="false" aria-controls="primary-navigation">
           <span></span><span></span><span></span>
         </button>
-        <nav class="main-nav" id="primary-navigation" aria-label="Головна навігація">
-          <a class="nav-link" href="index.html">Огляд</a>
-          <a class="nav-link" href="buses.html">Автобуси</a>
-          <a class="nav-link" href="drivers.html">Водії</a>
-          <a class="nav-link is-active" href="#companies" aria-current="page">Перевізники й маршрути</a>
+        <nav class="nav" id="primary-navigation" aria-label="Головна навігація">
+          <a class="nav__link" href="index.html">Огляд</a>
+          <a class="nav__link" href="buses.html">Автобуси</a>
+          <a class="nav__link" href="drivers.html">Водії</a>
+          <a class="nav__link nav__link--active" href="resources.html" aria-current="page">Перевізники й маршрути</a>
         </nav>
-        <a class="docs-link" href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer" aria-label="Документація API"><span class="docs-link-label">Документація API</span> <span aria-hidden="true">↗</span></a>
+        <a class="header__docs" href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer" aria-label="Документація API"><span class="header__docs-label">Документація API</span> <span aria-hidden="true">↗</span></a>
       </header>
 
-      <main class="resource-page">
-        <section class="resource-intro" aria-labelledby="page-title">
-          <p class="eyebrow eyebrow-dark">Керування автопарком</p>
+      <main class="resource">
+        <section class="resource__intro" aria-labelledby="page-title">
+          <p class="eyebrow eyebrow--dark">Керування автопарком</p>
           <h1 id="page-title">Перевізники та маршрути</h1>
           <p>Створюйте й оновлюйте перевізників та маршрути, що належать їм.</p>
         </section>
 
-        <p class="resource-notice" id="resource-notice" role="status" aria-live="polite"></p>
+        <p class="notice" id="resource-notice" role="status" aria-live="polite"></p>
 
-        <section class="resource-panel" id="companies" aria-labelledby="companies-title">
-          <div class="resource-heading">
+        <section class="resource__panel" id="companies" aria-labelledby="companies-title">
+          <div class="resource__heading">
             <div>
-              <p class="eyebrow eyebrow-dark">Компанії</p>
+              <p class="eyebrow eyebrow--dark">Компанії</p>
               <h2 id="companies-title">Перевізники</h2>
             </div>
-            <button class="button button-primary" type="button" data-create="company">Додати перевізника</button>
+            <button class="button button--primary" type="button" data-create="company">Додати перевізника</button>
           </div>
-          <p class="resource-state" id="companies-state" role="status" aria-live="polite">Завантажуємо перевізників…</p>
-          <div class="table-scroll" id="companies-table-wrap" hidden>
-            <table class="data-table">
+          <p class="resource__state" id="companies-state" role="status" aria-live="polite">Завантажуємо перевізників…</p>
+          <div class="table__scroll" id="companies-table-wrap" hidden>
+            <table class="table">
               <thead>
                 <tr><th scope="col">Назва</th><th scope="col">Телефон</th><th scope="col">Дії</th></tr>
               </thead>
@@ -60,17 +60,17 @@
           </div>
         </section>
 
-        <section class="resource-panel" id="routes" aria-labelledby="routes-title">
-          <div class="resource-heading">
+        <section class="resource__panel" id="routes" aria-labelledby="routes-title">
+          <div class="resource__heading">
             <div>
-              <p class="eyebrow eyebrow-dark">Маршрутна мережа</p>
+              <p class="eyebrow eyebrow--dark">Маршрутна мережа</p>
               <h2 id="routes-title">Маршрути</h2>
             </div>
-            <button class="button button-primary" id="create-route" type="button" data-create="route">Додати маршрут</button>
+            <button class="button button--primary" id="create-route" type="button" data-create="route">Додати маршрут</button>
           </div>
-          <p class="resource-state" id="routes-state" role="status" aria-live="polite">Завантажуємо маршрути…</p>
-          <div class="table-scroll" id="routes-table-wrap" hidden>
-            <table class="data-table">
+          <p class="resource__state" id="routes-state" role="status" aria-live="polite">Завантажуємо маршрути…</p>
+          <div class="table__scroll" id="routes-table-wrap" hidden>
+            <table class="table">
               <thead>
                 <tr><th scope="col">№</th><th scope="col">Назва</th><th scope="col">Відстань, км</th><th scope="col">Перевізник</th><th scope="col">Дії</th></tr>
               </thead>
@@ -86,20 +86,20 @@
       </footer>
     </div>
 
-    <dialog class="dialog resource-dialog" id="resource-dialog" aria-labelledby="dialog-title">
+    <dialog class="dialog dialog--resource" id="resource-dialog" aria-labelledby="dialog-title">
       <form id="resource-form" novalidate>
-        <div class="dialog-heading">
+        <div class="dialog__heading">
           <div>
-            <p class="eyebrow eyebrow-dark" id="dialog-kicker">Дані</p>
+            <p class="eyebrow eyebrow--dark" id="dialog-kicker">Дані</p>
             <h2 id="dialog-title">Редагувати запис</h2>
           </div>
-          <button class="icon-button" type="button" id="close-dialog" aria-label="Закрити">×</button>
+          <button class="dialog__close" type="button" id="close-dialog" aria-label="Закрити">×</button>
         </div>
-        <div class="resource-form-fields" id="form-fields"></div>
-        <p class="form-error dialog-error" id="dialog-error" role="alert" hidden></p>
-        <div class="dialog-actions">
+        <div class="dialog__fields" id="form-fields"></div>
+        <p class="form__error dialog__error" id="dialog-error" role="alert" hidden></p>
+        <div class="dialog__actions">
           <button class="button" type="button" id="cancel-dialog">Скасувати</button>
-          <button class="button button-primary" type="submit" id="save-resource">Зберегти</button>
+          <button class="button button--primary" type="submit" id="save-resource">Зберегти</button>
         </div>
       </form>
     </dialog>

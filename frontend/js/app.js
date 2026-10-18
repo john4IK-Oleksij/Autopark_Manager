@@ -8,7 +8,7 @@ const resources = [
 ];
 
 const apiStatus = document.querySelector("#api-status");
-const apiStatusMessage = apiStatus.querySelector(".status-message");
+const apiStatusMessage = apiStatus.querySelector(".api-status__message");
 const overviewMessage = document.querySelector("#overview-message");
 const refreshButton = document.querySelector("#refresh-button");
 

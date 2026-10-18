@@ -1,4 +1,5 @@
 import { api, ApiError } from "./api.js";
+import { confirmAction, decorateAction, showBanner } from "./ui.js";
 
 const busesState = document.querySelector("#buses-state");
 const busesTable = document.querySelector("#buses-table-wrap");
@@ -48,14 +49,14 @@ function renderBuses() {
     const actions = row.insertCell();
     for (const [label, action, variant] of [
       ["Змінити", "edit", ""],
-      ["Видалити", "delete", "button-danger"],
+      ["Видалити", "delete", "button--danger"],
     ]) {
       const button = document.createElement("button");
-      button.className = variant ? `button table-action ${variant}` : "button table-action";
+      button.className = variant ? `button button--compact ${variant}` : "button button--compact";
       button.type = "button";
       button.dataset.action = action;
       button.dataset.id = String(bus.id);
-      button.textContent = label;
+      decorateAction(button, label, action === "edit" ? "edit" : "delete");
       actions.append(button);
     }
     busesRows.append(row);
@@ -166,6 +167,11 @@ function showSaveError(error) {
 }
 
 function showNotice(message, variant = "success") {
+  if (variant === "success") {
+    notice.hidden = true;
+    showBanner(message);
+    return;
+  }
   notice.hidden = false;
   notice.dataset.variant = variant;
   notice.textContent = message;
@@ -199,7 +205,7 @@ function openDialog(bus = null) {
 }
 
 async function deleteBus(bus) {
-  if (!window.confirm(`Видалити автобус ${bus.plate_number}?`)) return;
+  if (!(await confirmAction(`Видалити автобус ${bus.plate_number}?`))) return;
   try {
     await api.delete(`/buses/${bus.id}`);
     showNotice("Автобус видалено.");

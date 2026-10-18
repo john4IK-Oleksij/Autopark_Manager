@@ -14,62 +14,62 @@
     <script type="module" src="js/navigation.js"></script>
   </head>
   <body>
-    <div class="page-shell">
-      <header class="topbar">
-        <a class="brand" href="index.html" aria-label="Автопарк — головна">
-          <span class="brand-mark" aria-hidden="true">A</span>
+    <div class="page">
+      <header class="header">
+        <a class="header__brand" href="index.html" aria-label="Автопарк — головна">
+          <span class="header__brand-mark" aria-hidden="true">A</span>
           <span>Автопарк</span>
         </a>
-        <button class="menu-toggle" type="button" aria-label="Відкрити меню" aria-expanded="false" aria-controls="primary-navigation">
+        <button class="header__toggle" type="button" aria-label="Відкрити меню" aria-expanded="false" aria-controls="primary-navigation">
           <span></span><span></span><span></span>
         </button>
-        <nav class="main-nav" id="primary-navigation" aria-label="Головна навігація">
-          <a class="nav-link" href="index.html">Огляд</a>
-          <a class="nav-link" href="buses.html">Автобуси</a>
-          <a class="nav-link is-active" href="drivers.html" aria-current="page">Водії</a>
-          <a class="nav-link" href="resources.html">Перевізники й маршрути</a>
+        <nav class="nav" id="primary-navigation" aria-label="Головна навігація">
+          <a class="nav__link" href="index.html">Огляд</a>
+          <a class="nav__link" href="buses.html">Автобуси</a>
+          <a class="nav__link nav__link--active" href="drivers.html" aria-current="page">Водії</a>
+          <a class="nav__link" href="resources.html">Перевізники й маршрути</a>
         </nav>
-        <a class="docs-link" href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer" aria-label="Документація API"><span class="docs-link-label">Документація API</span> <span aria-hidden="true">↗</span></a>
+        <a class="header__docs" href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer" aria-label="Документація API"><span class="header__docs-label">Документація API</span> <span aria-hidden="true">↗</span></a>
       </header>
 
-      <main class="resource-page">
-        <section class="resource-intro" aria-labelledby="page-title">
-          <p class="eyebrow eyebrow-dark"><a href="drivers.html">← Усі водії</a></p>
+      <main class="resource">
+        <section class="resource__intro" aria-labelledby="page-title">
+          <p class="eyebrow eyebrow--dark"><a href="drivers.html">← Усі водії</a></p>
           <h1 id="page-title">Картка водія</h1>
           <p>Дані водія та маршрути, на які його призначено.</p>
         </section>
 
-        <p class="resource-state" id="driver-state" role="status" aria-live="polite">Завантажуємо водія…</p>
+        <p class="resource__state" id="driver-state" role="status" aria-live="polite">Завантажуємо водія…</p>
         <button class="button" id="retry-driver" type="button" hidden>Спробувати ще раз</button>
 
         <div id="driver-content" hidden>
-          <section class="resource-panel" aria-labelledby="driver-name">
-            <div class="resource-heading">
+          <section class="resource__panel" aria-labelledby="driver-name">
+            <div class="resource__heading">
               <div>
-                <p class="eyebrow eyebrow-dark">Водій</p>
+                <p class="eyebrow eyebrow--dark">Водій</p>
                 <h2 id="driver-name"></h2>
               </div>
             </div>
-            <dl class="detail-list">
+            <dl class="detail">
               <div><dt>Телефон</dt><dd id="driver-phone"></dd></div>
               <div><dt>Посвідчення</dt><dd id="driver-license"></dd></div>
               <div><dt>Перевізник</dt><dd id="driver-company"></dd></div>
             </dl>
           </section>
 
-          <section class="resource-panel" aria-labelledby="routes-title">
-            <div class="resource-heading">
+          <section class="resource__panel" aria-labelledby="routes-title">
+            <div class="resource__heading">
               <div>
-                <p class="eyebrow eyebrow-dark">Призначення</p>
-                <h2 id="routes-title">Маршрути водія <span class="resource-count" id="routes-count"></span></h2>
+                <p class="eyebrow eyebrow--dark">Призначення</p>
+                <h2 id="routes-title">Маршрути водія <span class="resource__count" id="routes-count"></span></h2>
               </div>
             </div>
 
-            <p class="resource-state" id="routes-state" role="status" aria-live="polite"></p>
+            <p class="resource__state" id="routes-state" role="status" aria-live="polite"></p>
             <p class="action-message" id="action-message" role="status" aria-live="polite" hidden></p>
 
-            <div class="table-scroll" id="routes-table-wrap" tabindex="0" aria-label="Таблиця маршрутів водія; прокручуйте горизонтально за потреби" hidden>
-              <table class="data-table">
+            <div class="table__scroll" id="routes-table-wrap" tabindex="0" aria-label="Таблиця маршрутів водія; прокручуйте горизонтально за потреби" hidden>
+              <table class="table">
                 <thead>
                   <tr>
                     <th scope="col">№</th>
@@ -83,12 +83,12 @@
             </div>
 
             <form class="assign-form" id="assign-form" novalidate>
-              <label class="form-field">
-                <span class="form-label">Допустити до маршруту</span>
-                <select class="form-control" id="assign-route" required></select>
-                <span class="form-hint" id="assign-hint">Показано лише маршрути того самого перевізника.</span>
+              <label class="form__field">
+                <span class="form__label">Допустити до маршруту</span>
+                <select class="form__control" id="assign-route" required></select>
+                <span class="form__hint" id="assign-hint">Показано лише маршрути того самого перевізника.</span>
               </label>
-              <button class="button button-primary" id="assign-submit" type="submit">Призначити</button>
+              <button class="button button--primary" id="assign-submit" type="submit">Призначити</button>
             </form>
           </section>
         </div>

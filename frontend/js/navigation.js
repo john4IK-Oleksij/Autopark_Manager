@@ -1,11 +1,11 @@
-const toggle = document.querySelector(".menu-toggle");
+const toggle = document.querySelector(".header__toggle");
 const navigation = document.querySelector("#primary-navigation");
 
 if (toggle instanceof HTMLButtonElement && navigation instanceof HTMLElement) {
   function setMenuOpen(isOpen) {
     toggle.setAttribute("aria-expanded", String(isOpen));
     toggle.setAttribute("aria-label", isOpen ? "Закрити меню" : "Відкрити меню");
-    navigation.classList.toggle("is-open", isOpen);
+    navigation.classList.toggle("nav--open", isOpen);
   }
 
   toggle.addEventListener("click", () => {

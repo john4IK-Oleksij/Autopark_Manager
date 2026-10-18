@@ -1,4 +1,5 @@
 import { api, ApiError } from "./api.js";
+import { confirmAction, decorateAction, PHONE_MESSAGE, PHONE_PATTERN, showBanner } from "./ui.js";
 
 const driversState = document.querySelector("#drivers-state");
 const driversTable = document.querySelector("#drivers-table-wrap");
@@ -21,8 +22,14 @@ const saveButton = document.querySelector("#save-driver");
 
 const FIELD_RULES = {
   full_name: { label: "ПІБ", min: 3, max: 120 },
-  phone: { label: "Телефон", min: 7, max: 20 },
-  license_number: { label: "Номер посвідчення", min: 5, max: 20 },
+  phone: { label: "Телефон", min: 7, max: 20, pattern: PHONE_PATTERN, patternMessage: PHONE_MESSAGE },
+  license_number: {
+    label: "Номер посвідчення",
+    min: 5,
+    max: 20,
+    pattern: /\d/,
+    patternMessage: "Номер посвідчення має містити хоча б одну цифру.",
+  },
 };
 
 let drivers = [];
@@ -63,7 +70,7 @@ function appendCell(row, value) {
 function appendNameCell(row, driver) {
   const cell = document.createElement("td");
   const link = document.createElement("a");
-  link.className = "table-link";
+  link.className = "table__link";
   link.href = `driver.html?id=${driver.id}`;
   link.textContent = driver.full_name;
   cell.append(link);
@@ -74,21 +81,21 @@ function appendActionsCell(row, driver) {
   const cell = row.insertCell();
 
   const assign = document.createElement("a");
-  assign.className = "button table-action";
+  assign.className = "button button--compact";
   assign.href = `driver.html?id=${driver.id}#assign-form`;
   assign.textContent = "Призначити";
   cell.append(assign);
 
   for (const [label, action, variant] of [
     ["Змінити", "edit", ""],
-    ["Видалити", "delete", "button-danger"],
+    ["Видалити", "delete", "button--danger"],
   ]) {
     const button = document.createElement("button");
-    button.className = variant ? `button table-action ${variant}` : "button table-action";
+    button.className = variant ? `button button--compact ${variant}` : "button button--compact";
     button.type = "button";
     button.dataset.action = action;
     button.dataset.id = String(driver.id);
-    button.textContent = label;
+    decorateAction(button, label, action === "edit" ? "edit" : "delete");
     cell.append(button);
   }
 }
@@ -257,6 +264,11 @@ function renderCompanyOptions() {
 }
 
 function showNotice(message, variant = "success") {
+  if (variant === "success") {
+    notice.hidden = true;
+    showBanner(message);
+    return;
+  }
   notice.hidden = false;
   notice.dataset.variant = variant;
   notice.textContent = message;
@@ -298,6 +310,8 @@ function validate(payload) {
     const length = payload[name].length;
     if (length < rule.min || length > rule.max) {
       fail(name, `${rule.label}: від ${rule.min} до ${rule.max} символів.`);
+    } else if (rule.pattern && !rule.pattern.test(payload[name])) {
+      fail(name, rule.patternMessage);
     }
   }
   if (!payload.company_id) fail("company_id", "Оберіть перевізника.");
@@ -346,7 +360,7 @@ function closeDialog() {
 }
 
 async function deleteDriver(driver) {
-  if (!window.confirm(`Видалити водія ${driver.full_name}? Його допуски до маршрутів буде видалено.`)) return;
+  if (!(await confirmAction(`Видалити водія ${driver.full_name}? Його допуски до маршрутів буде видалено.`))) return;
   try {
     await api.delete(`/drivers/${driver.id}`);
     showNotice("Водія видалено.");

@@ -1,4 +1,5 @@
 import { api, ApiError } from "./api.js";
+import { confirmAction, decorateAction, showBanner } from "./ui.js";
 
 const state = document.querySelector("#driver-state");
 const retryButton = document.querySelector("#retry-driver");
@@ -70,6 +71,11 @@ function assignmentMessage(error) {
 }
 
 function showMessage(text, kind) {
+  if (kind === "success") {
+    actionMessage.hidden = true;
+    showBanner(text);
+    return;
+  }
   actionMessage.hidden = false;
   actionMessage.dataset.state = kind;
   actionMessage.textContent = text;
@@ -97,8 +103,8 @@ function renderRoutes() {
     const actions = document.createElement("td");
     const button = document.createElement("button");
     button.type = "button";
-    button.className = "button button-danger table-action";
-    button.textContent = "Зняти";
+    button.className = "button button--danger button--compact";
+    decorateAction(button, "Зняти", "delete");
     button.setAttribute("aria-label", `Зняти з маршруту ${route.number}`);
     button.disabled = busy;
     button.addEventListener("click", () => void unassign(route));
@@ -125,10 +131,17 @@ function renderRoutes() {
   }
   assignSelect.disabled = busy || available.length === 0;
   assignSubmit.disabled = busy || available.length === 0;
+  const companyName = driver.company_name ?? "перевізника водія";
   assignHint.textContent = companyRoutes.length === 0
-    ? "У перевізника цього водія ще немає маршрутів."
-    : "Показано лише маршрути того самого перевізника.";
+    ? `У перевізника «${companyName}» ще немає маршрутів. Водія можна допустити лише до маршрутів свого перевізника — додайте маршрут саме для «${companyName}».`
+    : available.length === 0
+      ? `Водій уже допущений до всіх маршрутів перевізника «${companyName}». Щоб допустити його до нового маршруту, додайте маршрут для «${companyName}» (перевізник вказується у формі маршруту) і оновіть сторінку.`
+      : `Показано лише маршрути перевізника «${companyName}».`;
 }
+
+window.addEventListener("pageshow", (event) => {
+  if (event.persisted && driver) void refreshRoutes();
+});
 
 async function loadRoutes() {
   const [routesResponse, allRoutes] = await Promise.all([
@@ -200,7 +213,7 @@ async function refreshRoutes() {
 
 async function unassign(route) {
   if (busy) return;
-  if (!window.confirm(`Скасувати допуск водія до маршруту №${route.number}?`)) return;
+  if (!(await confirmAction(`Зняти допуск водія до маршруту №${route.number}?`, "Зняти"))) return;
   busy = true;
   actionMessage.hidden = true;
   renderRoutes();
