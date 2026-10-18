@@ -60,6 +60,8 @@
 }
 
 html {
+  /* Єдина база: усі font-size у rem, тож масштаб міняється тут (16px = 100%) */
+  font-size: 100%;
   scroll-behavior: smooth;
 }
 
@@ -98,7 +100,7 @@ button {
   color: var(--color-text);
   cursor: pointer;
   font: inherit;
-  font-size: 12px;
+  font-size: 0.875rem;
   font-weight: 700;
   text-align: center;
   transition:
@@ -172,7 +174,7 @@ a:focus-visible,
 
 .form__label {
   color: var(--color-text);
-  font-size: 13px;
+  font-size: 0.9375rem;
   font-weight: 700;
 }
 
@@ -197,12 +199,12 @@ a:focus-visible,
 
 .form__hint {
   color: var(--color-muted);
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 
 .form__error {
   color: var(--color-danger);
-  font-size: 12px;
+  font-size: 0.875rem;
   font-weight: 600;
 }
 
@@ -217,7 +219,7 @@ a:focus-visible,
   width: 100%;
   border-collapse: collapse;
   color: var(--color-text);
-  font-size: 13px;
+  font-size: 0.9375rem;
   text-align: left;
 }
 
@@ -246,7 +248,7 @@ a:focus-visible,
   gap: 6px;
   padding: 4px 9px;
   border-radius: var(--radius-pill);
-  font-size: 11px;
+  font-size: 0.8125rem;
   font-weight: 800;
 }
 
@@ -326,14 +328,14 @@ a:focus-visible,
 
 .resource__intro h1 {
   margin: 0;
-  font-size: clamp(30px, 4vw, 44px);
+  font-size: clamp(2rem, 4vw, 2.875rem);
   letter-spacing: -0.055em;
 }
 
 .resource__intro > p:last-child {
   margin: 12px 0 0;
   color: var(--color-muted);
-  font-size: 14px;
+  font-size: 1rem;
 }
 
 .notice {
@@ -370,13 +372,13 @@ a:focus-visible,
 .resource__heading h2,
 .dialog__heading h2 {
   margin: 0;
-  font-size: clamp(20px, 3vw, 26px);
+  font-size: clamp(1.375rem, 3vw, 1.75rem);
   letter-spacing: -0.04em;
 }
 
 .resource__count {
   color: var(--color-muted);
-  font-size: 14px;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0;
   white-space: nowrap;
@@ -405,7 +407,7 @@ a:focus-visible,
 .drivers__summary {
   margin: 0 0 12px;
   color: var(--color-muted);
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 
 .pagination {
@@ -422,7 +424,7 @@ a:focus-visible,
 
 .pagination__indicator {
   color: var(--color-text);
-  font-size: 12px;
+  font-size: 0.875rem;
   font-weight: 700;
   text-align: center;
 }
@@ -430,7 +432,7 @@ a:focus-visible,
 .resource__state {
   margin: 0;
   color: var(--color-muted);
-  font-size: 13px;
+  font-size: 0.9375rem;
 }
 
 .resource__state[data-state="error"] {
@@ -464,12 +466,12 @@ a:focus-visible,
 
 .detail dt {
   color: var(--color-muted);
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 
 .detail dd {
   margin: 4px 0 0;
-  font-size: 15px;
+  font-size: 1.0625rem;
   font-weight: 700;
   overflow-wrap: anywhere;
 }
@@ -481,7 +483,7 @@ a:focus-visible,
   border-radius: var(--radius-control);
   background: var(--color-danger-soft);
   color: var(--color-danger);
-  font-size: 13px;
+  font-size: 0.9375rem;
 }
 
 .action-message[data-state="success"] {
@@ -523,7 +525,7 @@ a:focus-visible,
 .button--compact {
   min-height: 34px;
   padding: 0 10px;
-  font-size: 11px;
+  font-size: 0.8125rem;
   white-space: nowrap;
 }
 
@@ -590,7 +592,7 @@ a.button--compact {
   color: var(--color-text);
   cursor: pointer;
   font: inherit;
-  font-size: 24px;
+  font-size: 1.625rem;
   line-height: 1;
 }
 
@@ -632,7 +634,7 @@ a.button--compact {
   width: max-content;
   align-items: center;
   gap: 10px;
-  font-size: 18px;
+  font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: -0.04em;
   white-space: nowrap;
@@ -646,7 +648,7 @@ a.button--compact {
   border-radius: 12px;
   background: var(--color-primary);
   color: var(--color-primary-ink);
-  font-size: 17px;
+  font-size: 1.1875rem;
 }
 
 .nav {
@@ -656,7 +658,7 @@ a.button--compact {
   justify-content: center;
   gap: 34px;
   color: var(--color-muted);
-  font-size: 13px;
+  font-size: 0.9375rem;
   font-weight: 700;
 }
 
@@ -710,7 +712,7 @@ a.button--compact {
   padding: 11px 16px;
   border: 1px solid var(--color-border);
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 0.875rem;
   font-weight: 700;
 }
 
@@ -748,7 +750,7 @@ a.button--compact {
   gap: 9px;
   margin: 0 0 22px;
   color: var(--color-hero-muted);
-  font-size: 11px;
+  font-size: 0.8125rem;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -765,7 +767,7 @@ a.button--compact {
 .hero h1 {
   max-width: 690px;
   margin: 0;
-  font-size: clamp(34px, 5vw, 62px);
+  font-size: clamp(2.25rem, 5vw, 4rem);
   font-weight: 800;
   letter-spacing: -0.065em;
   line-height: 1.1;
@@ -779,7 +781,7 @@ a.button--compact {
   max-width: 480px;
   margin: 24px 0 30px;
   color: var(--color-hero-copy);
-  font-size: 15px;
+  font-size: 1.0625rem;
   line-height: 1.8;
 }
 
@@ -792,7 +794,7 @@ a.button--compact {
   border-radius: 999px;
   background: var(--color-primary);
   color: var(--color-primary-ink);
-  font-size: 13px;
+  font-size: 0.9375rem;
   font-weight: 800;
   transition: transform var(--transition-control), background var(--transition-control);
 }
@@ -823,7 +825,7 @@ a.button--compact {
   border-radius: 999px;
   background: var(--color-hero-status);
   color: var(--color-on-hero);
-  font-size: 11px;
+  font-size: 0.8125rem;
   font-weight: 700;
   backdrop-filter: blur(10px);
 }
@@ -845,7 +847,7 @@ a.button--compact {
 
 .hero__caption {
   color: var(--color-hero-caption);
-  font-size: 11px;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
 
@@ -868,7 +870,7 @@ a.button--compact {
 
 .overview__heading h2 {
   margin: 0;
-  font-size: clamp(24px, 3vw, 34px);
+  font-size: clamp(1.625rem, 3vw, 2.25rem);
   font-weight: 800;
   letter-spacing: -0.055em;
 }
@@ -881,7 +883,7 @@ a.button--compact {
   min-height: 20px;
   margin: 0 0 14px;
   color: var(--color-muted);
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 
 .overview__message[data-state="error"] {
@@ -912,7 +914,7 @@ a.button--compact {
   height: 36px;
   place-items: center;
   border-radius: 13px;
-  font-size: 18px;
+  font-size: 1.25rem;
   font-weight: 800;
 }
 
@@ -939,13 +941,13 @@ a.button--compact {
 .stats__label {
   margin: 18px 0 3px;
   color: var(--color-muted);
-  font-size: 12px;
+  font-size: 0.875rem;
   font-weight: 700;
 }
 
 .stats__value {
   margin: 0;
-  font-size: 31px;
+  font-size: 2.0625rem;
   font-weight: 800;
   letter-spacing: -0.06em;
 }
@@ -953,7 +955,7 @@ a.button--compact {
 .stats__note {
   margin: 5px 0 0;
   color: var(--color-muted);
-  font-size: 10px;
+  font-size: 0.75rem;
 }
 
 .stats__card[data-state="error"] {
@@ -968,7 +970,7 @@ a.button--compact {
   gap: 16px;
   border-top: 1px solid var(--color-footer-border);
   color: var(--color-muted);
-  font-size: 11px;
+  font-size: 0.8125rem;
 }
 
 .footer a {
@@ -1040,7 +1042,7 @@ a.button--compact {
 
   .header__brand {
     gap: 7px;
-    font-size: 15px;
+    font-size: 1.0625rem;
   }
 
   .header__brand-mark {
@@ -1049,12 +1051,12 @@ a.button--compact {
   }
 
   .nav {
-    font-size: 11px;
+    font-size: 0.8125rem;
   }
 
   .header__docs {
     padding: 9px 11px;
-    font-size: 10px;
+    font-size: 0.75rem;
     white-space: nowrap;
   }
 
@@ -1073,11 +1075,11 @@ a.button--compact {
   }
 
   .hero h1 {
-    font-size: clamp(33px, 9vw, 46px);
+    font-size: clamp(2.1875rem, 9vw, 3rem);
   }
 
   .hero__copy {
-    font-size: 13px;
+    font-size: 0.9375rem;
   }
 
   .hero__bottom {
@@ -1088,7 +1090,7 @@ a.button--compact {
 
   .api-status {
     max-width: 75%;
-    font-size: 10px;
+    font-size: 0.75rem;
   }
 
   .hero__caption {
@@ -1106,7 +1108,7 @@ a.button--compact {
   .overview__refresh {
     min-height: 38px;
     padding: 0 10px;
-    font-size: 10px;
+    font-size: 0.75rem;
     white-space: nowrap;
   }
 
@@ -1121,7 +1123,7 @@ a.button--compact {
   }
 
   .stats__value {
-    font-size: 27px;
+    font-size: 1.8125rem;
   }
 
   .footer {
@@ -1266,7 +1268,7 @@ a.button--compact {
 
 .button__icon {
   display: none;
-  font-size: 17px;
+  font-size: 1.1875rem;
   line-height: 1;
 }
 
@@ -1385,7 +1387,7 @@ a.button--compact {
   padding: 0 52px;
   background: var(--color-green);
   color: var(--color-white);
-  font-size: 15px;
+  font-size: 1.0625rem;
   font-weight: 700;
   text-align: center;
   transform: translateY(-100%);
@@ -1401,7 +1403,7 @@ a.button--compact {
 }
 
 .banner__icon {
-  font-size: 20px;
+  font-size: 1.375rem;
 }
 
 /* Маленьке вікно підтвердження замість window.confirm */
@@ -1412,7 +1414,7 @@ a.button--compact {
 
 .confirm__text {
   margin: 0 0 18px;
-  font-size: 14px;
+  font-size: 1rem;
   line-height: 1.45;
 }
 
@@ -1426,7 +1428,7 @@ a.button--compact {
   .banner {
     min-height: 64px;
     padding: 0 16px;
-    font-size: 14px;
+    font-size: 1rem;
   }
 
   .button--action {
@@ -1566,7 +1568,7 @@ a.button--compact {
 
 .error-page__code {
   margin: 0;
-  font-size: clamp(72px, 18vw, 140px);
+  font-size: clamp(4.625rem, 18vw, 8.875rem);
   font-weight: 800;
   letter-spacing: -0.06em;
   line-height: 1;
@@ -1574,7 +1576,7 @@ a.button--compact {
 
 .error-page__title {
   margin: 8px 0 12px;
-  font-size: clamp(22px, 4vw, 30px);
+  font-size: clamp(1.5rem, 4vw, 2rem);
 }
 
 .error-page__text {
