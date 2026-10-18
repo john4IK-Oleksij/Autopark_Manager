@@ -131,22 +131,75 @@ function getErrorMessage(error, resource) {
   if (!(error instanceof ApiError)) {
     return "Не вдалося виконати запит. Спробуйте ще раз.";
   }
-  if (error.status === 409) {
-    if (resource === "company") {
-      return error.message.includes("related records")
-        ? "Не можна видалити перевізника, поки до нього прив'язані ресурси."
-        : "Перевізник із такою назвою вже існує.";
-    }
-    return error.message.includes("driver assignments")
-      ? "Не можна видалити маршрут, поки на нього призначені водії."
-      : "Маршрут із таким номером уже існує.";
-  }
+  if (error.status === 409) return error.message;
   if (error.status === 404) {
-    return resource === "route" && error.message.includes("Company")
+    return resource === "route" && error.message.includes("Перевізника")
       ? "Оберіть перевізника, який існує."
       : "Запис не знайдено. Оновіть список і спробуйте ще раз.";
   }
   return error.message;
+}
+
+const FIELD_RULES = {
+  name: { label: "Назва перевізника", min: 2, max: 120 },
+  phone: { label: "Телефон", min: 7, max: 20 },
+  title: { label: "Назва маршруту", min: 3, max: 120 },
+};
+const NUMBER_RULES = {
+  number: { label: "Номер маршруту", min: 1, max: 2147483647 },
+  distance_km: { label: "Відстань", min: 1, max: 5000 },
+};
+
+function setFieldError(name, message) {
+  const target = form.querySelector(`[data-error-for="${name}"]`);
+  if (!target) return false;
+  target.textContent = message;
+  target.hidden = !message;
+  form.elements[name].setAttribute("aria-invalid", message ? "true" : "false");
+  return true;
+}
+
+function clearErrors() {
+  form.querySelectorAll("[data-error-for]").forEach((item) => setFieldError(item.dataset.errorFor, ""));
+  dialogError.hidden = true;
+  dialogError.textContent = "";
+}
+
+function validateForm(values) {
+  let firstInvalid = null;
+  const fail = (name, message) => {
+    setFieldError(name, message);
+    firstInvalid ??= name;
+  };
+  for (const [name, rule] of Object.entries(FIELD_RULES)) {
+    if (!(name in values)) continue;
+    const length = String(values[name]).trim().length;
+    if (length < rule.min || length > rule.max) {
+      fail(name, `${rule.label}: від ${rule.min} до ${rule.max} символів.`);
+    }
+  }
+  for (const [name, rule] of Object.entries(NUMBER_RULES)) {
+    if (!(name in values)) continue;
+    const value = Number(values[name]);
+    if (!Number.isInteger(value) || value < rule.min || value > rule.max) {
+      fail(name, `${rule.label}: ціле число від ${rule.min} до ${rule.max}.`);
+    }
+  }
+  if ("company_id" in values && !values.company_id) fail("company_id", "Оберіть перевізника.");
+  return firstInvalid;
+}
+
+function showSaveError(error, resource) {
+  if (error instanceof ApiError && error.status === 422 && error.issues.length > 0) {
+    let unmatched = false;
+    for (const issue of error.issues) {
+      const field = Array.isArray(issue.loc) ? issue.loc[issue.loc.length - 1] : null;
+      if (!setFieldError(field, issue.msg)) unmatched = true;
+    }
+    if (!unmatched) return;
+  }
+  dialogError.textContent = getErrorMessage(error, resource);
+  dialogError.hidden = false;
 }
 
 function makeField(labelText, name, type, value, { required = true, min, max, options } = {}) {
@@ -155,6 +208,10 @@ function makeField(labelText, name, type, value, { required = true, min, max, op
   const label = document.createElement("span");
   label.className = "form-label";
   label.textContent = labelText;
+  const fieldError = document.createElement("span");
+  fieldError.className = "form-error";
+  fieldError.dataset.errorFor = name;
+  fieldError.hidden = true;
 
   const input = options ? document.createElement("select") : document.createElement("input");
   input.className = "form-control";
@@ -184,7 +241,7 @@ function makeField(labelText, name, type, value, { required = true, min, max, op
     if (min !== undefined) input.min = String(min);
     if (max !== undefined) input.maxLength = max;
   }
-  wrapper.append(label, input);
+  wrapper.append(label, input, fieldError);
   return wrapper;
 }
 
@@ -268,9 +325,15 @@ routesRows.addEventListener("click", (event) => {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  if (!editing || !form.reportValidity()) return;
+  if (!editing) return;
 
   const values = Object.fromEntries(new FormData(form).entries());
+  clearErrors();
+  const invalid = validateForm(values);
+  if (invalid) {
+    form.elements[invalid].focus();
+    return;
+  }
   const payload = editing.resource === "company"
     ? { name: values.name.trim(), phone: values.phone.trim() }
     : {
@@ -296,8 +359,7 @@ form.addEventListener("submit", async (event) => {
       await loadRoutes();
     }
   } catch (error) {
-    dialogError.textContent = getErrorMessage(error, editing.resource);
-    dialogError.hidden = false;
+    showSaveError(error, editing.resource);
   } finally {
     saveButton.disabled = false;
   }

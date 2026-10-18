@@ -100,21 +100,25 @@
         <div class="resource-form-fields">
           <label class="form-field">
             <span class="form-label">Номерний знак</span>
-            <input class="form-control" name="plate_number" type="text" maxlength="15" required>
+            <input class="form-control" name="plate_number" type="text" minlength="4" maxlength="15" required>
+            <span class="form-error" data-error-for="plate_number" hidden></span>
           </label>
           <label class="form-field">
             <span class="form-label">Модель</span>
-            <input class="form-control" name="model" type="text" maxlength="80" required>
+            <input class="form-control" name="model" type="text" minlength="2" maxlength="80" required>
+            <span class="form-error" data-error-for="model" hidden></span>
           </label>
           <label class="form-field">
             <span class="form-label">Кількість місць</span>
             <input class="form-control" name="seats" type="number" min="10" max="120" step="1" inputmode="numeric" required>
+            <span class="form-error" data-error-for="seats" hidden></span>
           </label>
           <label class="form-field">
             <span class="form-label">Перевізник</span>
             <select class="form-control" name="company_id" required>
               <option value="">Оберіть перевізника</option>
             </select>
+            <span class="form-error" data-error-for="company_id" hidden></span>
           </label>
         </div>
         <p class="form-error dialog-error" id="dialog-error" role="alert" hidden></p>

@@ -101,7 +101,7 @@ class RouteResponse(BaseModel):
 
 
 class RouteCreate(BaseModel):
-    number: int = Field(ge=1)
+    number: int = Field(ge=1, le=2_147_483_647)
     title: RouteTitle
     distance_km: int = Field(ge=1, le=5000)
     company_id: int = Field(gt=0)

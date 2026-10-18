@@ -113,6 +113,58 @@ async function loadData() {
   }
 }
 
+const FIELD_RULES = {
+  plate_number: { label: "Номерний знак", min: 4, max: 15 },
+  model: { label: "Модель", min: 2, max: 80 },
+};
+
+function setFieldError(name, message) {
+  const target = form.querySelector(`[data-error-for="${name}"]`);
+  if (!target) return false;
+  target.textContent = message;
+  target.hidden = !message;
+  form.elements[name].setAttribute("aria-invalid", message ? "true" : "false");
+  return true;
+}
+
+function clearErrors() {
+  form.querySelectorAll("[data-error-for]").forEach((item) => setFieldError(item.dataset.errorFor, ""));
+  dialogError.hidden = true;
+  dialogError.textContent = "";
+}
+
+function validate(payload) {
+  let firstInvalid = null;
+  const fail = (name, message) => {
+    setFieldError(name, message);
+    firstInvalid ??= name;
+  };
+  for (const [name, rule] of Object.entries(FIELD_RULES)) {
+    const length = payload[name].length;
+    if (length < rule.min || length > rule.max) {
+      fail(name, `${rule.label}: від ${rule.min} до ${rule.max} символів.`);
+    }
+  }
+  if (!Number.isInteger(payload.seats) || payload.seats < 10 || payload.seats > 120) {
+    fail("seats", "Кількість місць: ціле число від 10 до 120.");
+  }
+  if (!payload.company_id) fail("company_id", "Оберіть перевізника.");
+  return firstInvalid;
+}
+
+function showSaveError(error) {
+  if (error instanceof ApiError && error.status === 422 && error.issues.length > 0) {
+    let unmatched = false;
+    for (const issue of error.issues) {
+      const field = Array.isArray(issue.loc) ? issue.loc[issue.loc.length - 1] : null;
+      if (!setFieldError(field, issue.msg)) unmatched = true;
+    }
+    if (!unmatched) return;
+  }
+  dialogError.textContent = getErrorMessage(error, "save");
+  dialogError.hidden = false;
+}
+
 function showNotice(message, variant = "success") {
   notice.hidden = false;
   notice.dataset.variant = variant;
@@ -123,21 +175,13 @@ function getErrorMessage(error, action) {
   if (!(error instanceof ApiError)) {
     return "Не вдалося виконати запит. Спробуйте ще раз.";
   }
-  if (error.status === 409) {
-    return action === "delete"
-      ? "Не можна видалити автобус, поки до нього прив'язані записи."
-      : "Автобус із таким номерним знаком уже існує.";
-  }
-  if (error.status === 404) {
-    return error.message.includes("Перевізника")
-      ? "Оберіть перевізника, який існує."
-      : "Автобус не знайдено. Оновіть список і спробуйте ще раз.";
-  }
+  if (error.status === 409 || error.status === 404) return error.message;
   return error.message;
 }
 
 function openDialog(bus = null) {
   editingId = bus?.id ?? null;
+  clearErrors();
   document.querySelector("#dialog-title").textContent = bus ? "Редагувати автобус" : "Новий автобус";
   dialogError.hidden = true;
   dialogError.textContent = "";
@@ -186,7 +230,7 @@ busesRows.addEventListener("click", (event) => {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  if (companies.length === 0 || !form.reportValidity()) return;
+  if (companies.length === 0) return;
 
   const values = new FormData(form);
   const payload = {
@@ -195,10 +239,15 @@ form.addEventListener("submit", async (event) => {
     seats: Number(values.get("seats")),
     company_id: Number(values.get("company_id")),
   };
+  clearErrors();
+  const invalid = validate(payload);
+  if (invalid) {
+    form.elements[invalid].focus();
+    return;
+  }
   const path = editingId === null ? "/buses" : `/buses/${editingId}`;
   const isUpdate = editingId !== null;
   saveButton.disabled = true;
-  dialogError.hidden = true;
   try {
     if (isUpdate) await api.put(path, payload);
     else await api.post(path, payload);
@@ -206,8 +255,7 @@ form.addEventListener("submit", async (event) => {
     showNotice(isUpdate ? "Автобус оновлено." : "Автобус створено.");
     await loadData();
   } catch (error) {
-    dialogError.textContent = getErrorMessage(error, "save");
-    dialogError.hidden = false;
+    showSaveError(error);
   } finally {
     saveButton.disabled = companies.length === 0;
   }
