@@ -129,7 +129,7 @@ function getErrorMessage(error, action) {
       : "Автобус із таким номерним знаком уже існує.";
   }
   if (error.status === 404) {
-    return error.message.includes("Company")
+    return error.message.includes("Перевізника")
       ? "Оберіть перевізника, який існує."
       : "Автобус не знайдено. Оновіть список і спробуйте ще раз.";
   }

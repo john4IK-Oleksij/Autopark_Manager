@@ -16,7 +16,7 @@ router = APIRouter(
 
 @router.get("", response_model=list[RouteResponse])
 def get_routes(db: Session = Depends(get_db)):
-    statement = select(Route)
+    statement = select(Route).order_by(Route.number)
     return db.execute(statement).scalars().all()
 
 
@@ -31,7 +31,7 @@ def get_route(route_id: int, db: Session = Depends(get_db)):
     if route is None:
         raise HTTPException(
             status_code=404,
-            detail="Route not found",
+            detail="Маршрут не знайдено",
         )
     return route
 
@@ -55,7 +55,7 @@ def create_route(
     if company is None:
         raise HTTPException(
             status_code=404,
-            detail="Company not found",
+            detail="Перевізника не знайдено",
         )
     route = Route(
         number=route_data.number,
@@ -71,7 +71,7 @@ def create_route(
         db.rollback()
         raise HTTPException(
             status_code=409,
-            detail="Route with this number already exists",
+            detail="Маршрут із таким номером уже існує",
         )
     return route
 
@@ -91,9 +91,9 @@ def update_route(
 ):
     route = db.get(Route, route_id)
     if route is None:
-        raise HTTPException(status_code=404, detail="Route not found")
+        raise HTTPException(status_code=404, detail="Маршрут не знайдено")
     if db.get(Company, route_data.company_id) is None:
-        raise HTTPException(status_code=404, detail="Company not found")
+        raise HTTPException(status_code=404, detail="Перевізника не знайдено")
 
     route.number = route_data.number
     route.title = route_data.title
@@ -106,7 +106,7 @@ def update_route(
         db.rollback()
         raise HTTPException(
             status_code=409,
-            detail="Route with this number already exists",
+            detail="Маршрут із таким номером уже існує",
         )
     return route
 
@@ -122,7 +122,7 @@ def update_route(
 def delete_route(route_id: int, db: Session = Depends(get_db)):
     route = db.get(Route, route_id)
     if route is None:
-        raise HTTPException(status_code=404, detail="Route not found")
+        raise HTTPException(status_code=404, detail="Маршрут не знайдено")
 
     try:
         db.execute(delete(Route).where(Route.id == route_id))
@@ -131,6 +131,6 @@ def delete_route(route_id: int, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(
             status_code=409,
-            detail="Route cannot be deleted while it has driver assignments",
+            detail="Маршрут неможливо видалити: є призначення водіїв",
         )
     return Response(status_code=204)

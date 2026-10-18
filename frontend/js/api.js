@@ -1,10 +1,11 @@
 const API_BASE_URL = "http://127.0.0.1:8000";
 
 export class ApiError extends Error {
-  constructor(message, status) {
+  constructor(message, status, issues = []) {
     super(message);
     this.name = "ApiError";
     this.status = status;
+    this.issues = issues;
   }
 }
 
@@ -26,12 +27,15 @@ async function request(path, options = {}) {
   }
 
   const contentType = response.headers.get("content-type") ?? "";
-  const body = contentType.includes("application/json")
-    ? await response.json()
-    : null;
+  let body = null;
+  if (response.status !== 204 && contentType.includes("application/json")) {
+    const text = await response.text();
+    body = text ? JSON.parse(text) : null;
+  }
 
   if (!response.ok) {
     const detail = body?.detail;
+    const issues = Array.isArray(detail) ? detail : [];
     let message = `Запит завершився помилкою (${response.status}).`;
     if (typeof detail === "string") {
       message = detail;
@@ -44,7 +48,7 @@ async function request(path, options = {}) {
         .join("; ");
       message = fields ? `Перевірте введені дані: ${fields}` : message;
     }
-    throw new ApiError(message, response.status);
+    throw new ApiError(message, response.status, issues);
   }
 
   return body;

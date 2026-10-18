@@ -15,7 +15,7 @@ router = APIRouter(
 
 @router.get("", response_model=list[CompanyResponse])
 def get_companies(db: Session = Depends(get_db)):
-    statement = select(Company)
+    statement = select(Company).order_by(Company.name)
     return db.execute(statement).scalars().all()
 
 
@@ -30,7 +30,7 @@ def get_company(company_id: int, db: Session = Depends(get_db)):
     if company is None:
         raise HTTPException(
             status_code=404,
-            detail="Company not found",
+            detail="Перевізника не знайдено",
         )
     return company
 
@@ -52,7 +52,7 @@ def create_company(
         db.rollback()
         raise HTTPException(
             status_code=409,
-            detail="Company with this name already exists",
+            detail="Перевізник із такою назвою уже існує",
         )
     return company
 
@@ -72,7 +72,7 @@ def update_company(
 ):
     company = db.get(Company, company_id)
     if company is None:
-        raise HTTPException(status_code=404, detail="Company not found")
+        raise HTTPException(status_code=404, detail="Перевізника не знайдено")
 
     company.name = company_data.name
     company.phone = company_data.phone
@@ -83,7 +83,7 @@ def update_company(
         db.rollback()
         raise HTTPException(
             status_code=409,
-            detail="Company with this name already exists",
+            detail="Перевізник із такою назвою уже існує",
         )
     return company
 
@@ -99,7 +99,7 @@ def update_company(
 def delete_company(company_id: int, db: Session = Depends(get_db)):
     company = db.get(Company, company_id)
     if company is None:
-        raise HTTPException(status_code=404, detail="Company not found")
+        raise HTTPException(status_code=404, detail="Перевізника не знайдено")
 
     try:
         db.execute(delete(Company).where(Company.id == company_id))
@@ -108,6 +108,6 @@ def delete_company(company_id: int, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(
             status_code=409,
-            detail="Company cannot be deleted while it has related records",
+            detail="Перевізника неможливо видалити: є пов'язані записи",
         )
     return Response(status_code=204)

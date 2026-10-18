@@ -9,31 +9,31 @@ CompanyName = Annotated[
 ]
 PhoneNumber = Annotated[
     str,
-    StringConstraints(strip_whitespace=True, min_length=1, max_length=20),
+    StringConstraints(strip_whitespace=True, min_length=7, max_length=20),
 ]
 PlateNumber = Annotated[
     str,
-    StringConstraints(strip_whitespace=True, min_length=1, max_length=15),
+    StringConstraints(strip_whitespace=True, min_length=4, max_length=15),
 ]
 BusModel = Annotated[
     str,
-    StringConstraints(strip_whitespace=True, min_length=1, max_length=80),
+    StringConstraints(strip_whitespace=True, min_length=2, max_length=80),
 ]
 DriverName = Annotated[
     str,
-    StringConstraints(strip_whitespace=True, min_length=1, max_length=120),
+    StringConstraints(strip_whitespace=True, min_length=3, max_length=120),
 ]
 DriverPhone = Annotated[
     str,
-    StringConstraints(strip_whitespace=True, min_length=1, max_length=20),
+    StringConstraints(strip_whitespace=True, min_length=7, max_length=20),
 ]
 LicenseNumber = Annotated[
     str,
-    StringConstraints(strip_whitespace=True, min_length=1, max_length=20),
+    StringConstraints(strip_whitespace=True, min_length=5, max_length=20),
 ]
 RouteTitle = Annotated[
     str,
-    StringConstraints(strip_whitespace=True, min_length=1, max_length=120),
+    StringConstraints(strip_whitespace=True, min_length=3, max_length=120),
 ]
 
 
@@ -56,12 +56,13 @@ class BusResponse(BaseModel):
     model: str
     seats: int
     company_id: int
+    company_name: str
 
 
 class BusCreate(BaseModel):
     plate_number: PlateNumber
     model: BusModel
-    seats: int = Field(gt=0)
+    seats: int = Field(ge=10, le=120)
     company_id: int = Field(gt=0)
 
     
@@ -73,6 +74,7 @@ class DriverResponse(BaseModel):
     phone: str
     license_number: str
     company_id: int
+    company_name: str
 
 
 class DriverPageResponse(BaseModel):
@@ -99,9 +101,9 @@ class RouteResponse(BaseModel):
 
 
 class RouteCreate(BaseModel):
-    number: int = Field(gt=0)
+    number: int = Field(ge=1)
     title: RouteTitle
-    distance_km: int = Field(gt=0)
+    distance_km: int = Field(ge=1, le=5000)
     company_id: int = Field(gt=0)
 
     

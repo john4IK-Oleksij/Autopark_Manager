@@ -437,6 +437,89 @@ a:focus-visible,
   color: var(--color-danger);
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.resource-intro .eyebrow a {
+  color: inherit;
+}
+
+.table-link {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.detail-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin: 0;
+}
+
+.detail-list dt {
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.detail-list dd {
+  margin: 4px 0 0;
+  font-size: 15px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.action-message {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-danger-border);
+  border-radius: var(--radius-control);
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+  font-size: 13px;
+}
+
+.action-message[data-state="success"] {
+  border-color: var(--color-green);
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.action-message[hidden] {
+  display: none;
+}
+
+.assign-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.assign-form .button {
+  margin-top: 25px;
+}
+
+#driver-content[hidden] {
+  display: none;
+}
+
+@media (max-width: 520px) {
+  .assign-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .assign-form .button {
+    margin-top: 0;
+  }
+}
+
 .table-action {
   min-height: 34px;
   padding: 0 10px;
@@ -450,6 +533,18 @@ a:focus-visible,
 
 .data-table td .table-action + .table-action {
   margin-left: 6px;
+}
+
+.resource-heading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+a.table-action {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
 }
 
 .button-danger.table-action {
@@ -1047,7 +1142,9 @@ a:focus-visible,
     gap: 12px;
   }
 
-  .resource-heading > .button {
+  .resource-heading > .button,
+  .resource-heading-actions,
+  .resource-heading-actions .button {
     width: 100%;
   }
 

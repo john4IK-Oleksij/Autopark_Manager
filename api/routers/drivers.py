@@ -21,14 +21,14 @@ router = APIRouter(
 
 @router.get("", response_model=DriverPageResponse)
 def get_drivers(
-    limit: int = Query(default=10, ge=1, le=100),
+    limit: int = Query(default=20, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
     db: Session = Depends(get_db),
 ):
     total = db.scalar(select(func.count()).select_from(Driver)) or 0
     statement = (
         select(Driver)
-        .order_by(Driver.id)
+        .order_by(Driver.full_name, Driver.id)
         .limit(limit)
         .offset(offset)
     )
@@ -56,7 +56,7 @@ def get_driver(driver_id: int, db: Session = Depends(get_db)):
     if driver is None:
         raise HTTPException(
             status_code=404,
-            detail="Driver not found",
+            detail="Водія не знайдено",
         )
 
     return driver
@@ -69,13 +69,13 @@ def get_driver(driver_id: int, db: Session = Depends(get_db)):
 )
 def get_driver_routes(driver_id: int, db: Session = Depends(get_db)):
     if db.get(Driver, driver_id) is None:
-        raise HTTPException(status_code=404, detail="Driver not found")
+        raise HTTPException(status_code=404, detail="Водія не знайдено")
 
     statement = (
         select(Route)
         .join(DriverRoute, DriverRoute.route_id == Route.id)
         .where(DriverRoute.driver_id == driver_id)
-        .order_by(Route.id)
+        .order_by(Route.number)
     )
     return db.execute(statement).scalars().all()
 
@@ -99,7 +99,7 @@ def create_driver(
     if company is None:
         raise HTTPException(
             status_code=404,
-            detail="Company not found",
+            detail="Перевізника не знайдено",
         )
     driver = Driver(
         license_number=driver_data.license_number,
@@ -117,7 +117,7 @@ def create_driver(
         db.rollback()
         raise HTTPException(
             status_code=409,
-            detail="Driver with this license number already exists",
+            detail="Водій із таким номером посвідчення уже існує",
         )
 
     return driver
@@ -138,9 +138,9 @@ def update_driver(
 ):
     driver = db.get(Driver, driver_id)
     if driver is None:
-        raise HTTPException(status_code=404, detail="Driver not found")
+        raise HTTPException(status_code=404, detail="Водія не знайдено")
     if db.get(Company, driver_data.company_id) is None:
-        raise HTTPException(status_code=404, detail="Company not found")
+        raise HTTPException(status_code=404, detail="Перевізника не знайдено")
 
     driver.full_name = driver_data.full_name
     driver.phone = driver_data.phone
@@ -153,7 +153,7 @@ def update_driver(
         db.rollback()
         raise HTTPException(
             status_code=409,
-            detail="Driver with this license number already exists",
+            detail="Водій із таким номером посвідчення уже існує",
         )
     return driver
 
@@ -169,7 +169,7 @@ def update_driver(
 def delete_driver(driver_id: int, db: Session = Depends(get_db)):
     driver = db.get(Driver, driver_id)
     if driver is None:
-        raise HTTPException(status_code=404, detail="Driver not found")
+        raise HTTPException(status_code=404, detail="Водія не знайдено")
     try:
         db.execute(delete(Driver).where(Driver.id == driver_id))
         db.commit()
@@ -177,6 +177,6 @@ def delete_driver(driver_id: int, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(
             status_code=409,
-            detail="Driver cannot be deleted while it has related records",
+            detail="Водія неможливо видалити: є пов'язані записи",
         )
     return Response(status_code=204)

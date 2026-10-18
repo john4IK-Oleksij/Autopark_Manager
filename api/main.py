@@ -1,7 +1,8 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from sqlalchemy import text
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from database import engine
 from routers.buses import router as buses_router
@@ -31,6 +32,14 @@ app.include_router(buses_router)
 app.include_router(drivers_router)
 app.include_router(routes_router)
 app.include_router(driver_routes_router)
+
+
+@app.exception_handler(IntegrityError)
+async def integrity_error_handler(request: Request, exc: IntegrityError):
+    return JSONResponse(
+        status_code=409,
+        content={"detail": "Порушено цілісність даних"},
+    )
 
 
 @app.get("/health")

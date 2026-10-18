@@ -16,7 +16,7 @@ router = APIRouter(
 
 @router.get("", response_model=list[BusResponse])
 def get_buses(db: Session = Depends(get_db)):
-    statement = select(Bus)
+    statement = select(Bus).order_by(Bus.plate_number)
     return db.execute(statement).scalars().all()
 
 
@@ -31,7 +31,7 @@ def get_bus(bus_id: int, db: Session = Depends(get_db)):
     if bus is None:
         raise HTTPException(
             status_code=404,
-            detail="Bus not found",
+            detail="Автобус не знайдено",
         )
 
     return bus
@@ -54,7 +54,7 @@ def create_bus(
     if company is None:
         raise HTTPException(
             status_code=404,
-            detail="Company not found",
+            detail="Перевізника не знайдено",
         )
     bus = Bus(
         plate_number=bus_data.plate_number,
@@ -70,7 +70,7 @@ def create_bus(
         db.rollback()
         raise HTTPException(
             status_code=409,
-            detail="Bus with this plate number already exists",
+            detail="Автобус із таким номером уже існує",
         )
     return bus
 
@@ -90,9 +90,9 @@ def update_bus(
 ):
     bus = db.get(Bus, bus_id)
     if bus is None:
-        raise HTTPException(status_code=404, detail="Bus not found")
+        raise HTTPException(status_code=404, detail="Автобус не знайдено")
     if db.get(Company, bus_data.company_id) is None:
-        raise HTTPException(status_code=404, detail="Company not found")
+        raise HTTPException(status_code=404, detail="Перевізника не знайдено")
 
     bus.plate_number = bus_data.plate_number
     bus.model = bus_data.model
@@ -105,7 +105,7 @@ def update_bus(
         db.rollback()
         raise HTTPException(
             status_code=409,
-            detail="Bus with this plate number already exists",
+            detail="Автобус із таким номером уже існує",
         )
     return bus
 
@@ -121,7 +121,7 @@ def update_bus(
 def delete_bus(bus_id: int, db: Session = Depends(get_db)):
     bus = db.get(Bus, bus_id)
     if bus is None:
-        raise HTTPException(status_code=404, detail="Bus not found")
+        raise HTTPException(status_code=404, detail="Автобус не знайдено")
     try:
         db.execute(delete(Bus).where(Bus.id == bus_id))
         db.commit()
@@ -129,6 +129,6 @@ def delete_bus(bus_id: int, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(
             status_code=409,
-            detail="Bus cannot be deleted while it has related records",
+            detail="Автобус неможливо видалити: є пов'язані записи",
         )
     return Response(status_code=204)

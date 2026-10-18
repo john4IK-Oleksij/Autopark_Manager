@@ -9,8 +9,8 @@ from models import Driver, DriverRoute, Route
 from schemas import DriverRouteCreate, DriverRouteResponse
 
 router = APIRouter(
-    prefix="/driver-routes",
-    tags=["Driver Routes"],
+    prefix="/assignments",
+    tags=["Assignments"],
 )
 
 
@@ -38,20 +38,20 @@ def assign_driver_to_route(
     if driver is None:
         raise HTTPException(
             status_code=404,
-            detail="Driver not found",
+            detail="Водія не знайдено",
         )
 
     route = db.get(Route, assignment_data.route_id)
     if route is None:
         raise HTTPException(
             status_code=404,
-            detail="Route not found",
+            detail="Маршрут не знайдено",
         )
 
     if driver.company_id != route.company_id:
         raise HTTPException(
             status_code=422,
-            detail="Driver and route must belong to the same company",
+            detail="Водій і маршрут мають належати одному перевізнику",
         )
 
     existing = db.get(
@@ -61,7 +61,7 @@ def assign_driver_to_route(
     if existing is not None:
         raise HTTPException(
             status_code=409,
-            detail="Driver is already assigned to this route",
+            detail="Водій уже допущений до цього маршруту",
         )
 
     assignment = DriverRoute(
@@ -77,7 +77,7 @@ def assign_driver_to_route(
         db.rollback()
         raise HTTPException(
             status_code=409,
-            detail="Could not create this assignment",
+            detail="Не вдалося створити допуск",
         )
 
     return assignment
@@ -101,7 +101,7 @@ def remove_driver_from_route(
     if assignment is None:
         raise HTTPException(
             status_code=404,
-            detail="Assignment not found",
+            detail="Допуск не знайдено",
         )
 
     db.delete(assignment)
@@ -111,5 +111,5 @@ def remove_driver_from_route(
         db.rollback()
         raise HTTPException(
             status_code=409,
-            detail="Could not remove this assignment",
+            detail="Не вдалося скасувати допуск",
         )

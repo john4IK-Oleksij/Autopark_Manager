@@ -36,8 +36,10 @@
         <section class="resource-intro" aria-labelledby="page-title">
           <p class="eyebrow eyebrow-dark">Команда автопарку</p>
           <h1 id="page-title">Водії</h1>
-          <p>Переглядайте водіїв і дані їхніх посвідчень.</p>
+          <p>Керуйте водіями та їхніми допусками до маршрутів.</p>
         </section>
+
+        <p class="resource-notice" id="driver-notice" role="status" aria-live="polite" hidden></p>
 
         <section class="resource-panel" id="drivers" aria-labelledby="drivers-title">
           <div class="resource-heading">
@@ -45,7 +47,10 @@
               <p class="eyebrow eyebrow-dark">Керування персоналом</p>
               <h2 id="drivers-title">Список водіїв <span class="resource-count" id="drivers-total"></span></h2>
             </div>
-            <button class="button" id="refresh-drivers" type="button">Оновити список</button>
+            <div class="resource-heading-actions">
+              <button class="button" id="refresh-drivers" type="button">Оновити список</button>
+              <button class="button button-primary" id="create-driver" type="button">Додати водія</button>
+            </div>
           </div>
 
           <div class="driver-controls">
@@ -76,6 +81,7 @@
                   <th scope="col">Телефон</th>
                   <th scope="col">Посвідчення</th>
                   <th scope="col">Перевізник</th>
+                  <th scope="col">Дії</th>
                 </tr>
               </thead>
               <tbody id="drivers-rows"></tbody>
@@ -95,5 +101,46 @@
         <a href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer">Відкрити Swagger UI</a>
       </footer>
     </div>
+
+    <dialog class="dialog resource-dialog" id="driver-dialog" aria-labelledby="dialog-title">
+      <form id="driver-form" novalidate>
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow eyebrow-dark">Команда автопарку</p>
+            <h2 id="dialog-title">Новий водій</h2>
+          </div>
+          <button class="icon-button" type="button" id="close-dialog" aria-label="Закрити">×</button>
+        </div>
+        <div class="resource-form-fields">
+          <label class="form-field">
+            <span class="form-label">ПІБ</span>
+            <input class="form-control" name="full_name" type="text" minlength="3" maxlength="120" required>
+            <span class="form-error" data-error-for="full_name" hidden></span>
+          </label>
+          <label class="form-field">
+            <span class="form-label">Телефон</span>
+            <input class="form-control" name="phone" type="tel" minlength="7" maxlength="20" required>
+            <span class="form-error" data-error-for="phone" hidden></span>
+          </label>
+          <label class="form-field">
+            <span class="form-label">Номер посвідчення</span>
+            <input class="form-control" name="license_number" type="text" minlength="5" maxlength="20" required>
+            <span class="form-error" data-error-for="license_number" hidden></span>
+          </label>
+          <label class="form-field">
+            <span class="form-label">Перевізник</span>
+            <select class="form-control" name="company_id" required>
+              <option value="">Оберіть перевізника</option>
+            </select>
+            <span class="form-error" data-error-for="company_id" hidden></span>
+          </label>
+        </div>
+        <p class="form-error dialog-error" id="dialog-error" role="alert" hidden></p>
+        <div class="dialog-actions">
+          <button class="button" type="button" id="cancel-dialog">Скасувати</button>
+          <button class="button button-primary" type="submit" id="save-driver">Зберегти</button>
+        </div>
+      </form>
+    </dialog>
   </body>
 </html>

@@ -13,9 +13,22 @@ const refreshButton = document.querySelector("#refresh-drivers");
 const searchInput = document.querySelector("#driver-search");
 const pageSizeSelect = document.querySelector("#page-size");
 const pageIndicator = document.querySelector("#page-indicator");
+const notice = document.querySelector("#driver-notice");
+const dialog = document.querySelector("#driver-dialog");
+const form = document.querySelector("#driver-form");
+const dialogError = document.querySelector("#dialog-error");
+const saveButton = document.querySelector("#save-driver");
+
+const FIELD_RULES = {
+  full_name: { label: "ПІБ", min: 3, max: 120 },
+  phone: { label: "Телефон", min: 7, max: 20 },
+  license_number: { label: "Номер посвідчення", min: 5, max: 20 },
+};
 
 let drivers = [];
 let companies = [];
+let editingId = null;
+let saving = false;
 let total = 0;
 let limit = Number(pageSizeSelect.value);
 let offset = 0;
@@ -47,6 +60,39 @@ function appendCell(row, value) {
   row.append(cell);
 }
 
+function appendNameCell(row, driver) {
+  const cell = document.createElement("td");
+  const link = document.createElement("a");
+  link.className = "table-link";
+  link.href = `driver.html?id=${driver.id}`;
+  link.textContent = driver.full_name;
+  cell.append(link);
+  row.append(cell);
+}
+
+function appendActionsCell(row, driver) {
+  const cell = row.insertCell();
+
+  const assign = document.createElement("a");
+  assign.className = "button table-action";
+  assign.href = `driver.html?id=${driver.id}#assign-form`;
+  assign.textContent = "Призначити";
+  cell.append(assign);
+
+  for (const [label, action, variant] of [
+    ["Змінити", "edit", ""],
+    ["Видалити", "delete", "button-danger"],
+  ]) {
+    const button = document.createElement("button");
+    button.className = variant ? `button table-action ${variant}` : "button table-action";
+    button.type = "button";
+    button.dataset.action = action;
+    button.dataset.id = String(driver.id);
+    button.textContent = label;
+    cell.append(button);
+  }
+}
+
 function getVisibleDrivers() {
   const query = searchInput.value.trim().toLocaleLowerCase("uk");
   if (!query) return drivers;
@@ -69,11 +115,12 @@ function renderDrivers() {
 
   for (const driver of visibleDrivers) {
     const row = document.createElement("tr");
-    appendCell(row, driver.full_name);
+    appendNameCell(row, driver);
     appendCell(row, driver.phone);
     appendCell(row, driver.license_number);
     appendCell(row, companies.find((company) => company.id === driver.company_id)?.name
       ?? `Перевізник #${driver.company_id}`);
+    appendActionsCell(row, driver);
     driversRows.append(row);
   }
 
@@ -151,6 +198,7 @@ async function loadDrivers() {
       }
       page = pageResponse;
       companies = companyResponse;
+      renderCompanyOptions();
 
       if (page.total > 0 && offset >= page.total && attempt === 0) {
         offset = Math.floor((page.total - 1) / limit) * limit;
@@ -197,5 +245,160 @@ nextButton.addEventListener("click", () => {
 });
 retryButton.addEventListener("click", () => void loadDrivers());
 refreshButton.addEventListener("click", () => void loadDrivers());
+
+function renderCompanyOptions() {
+  const select = form.elements.company_id;
+  const selected = select.value;
+  select.replaceChildren(new Option("Оберіть перевізника", ""));
+  for (const company of companies) {
+    select.add(new Option(company.name, String(company.id)));
+  }
+  select.value = selected;
+}
+
+function showNotice(message, variant = "success") {
+  notice.hidden = false;
+  notice.dataset.variant = variant;
+  notice.textContent = message;
+}
+
+function setFieldError(name, message) {
+  const target = form.querySelector(`[data-error-for="${name}"]`);
+  if (!target) return false;
+  target.textContent = message;
+  target.hidden = !message;
+  form.elements[name].setAttribute("aria-invalid", message ? "true" : "false");
+  return true;
+}
+
+function clearErrors() {
+  for (const name of [...Object.keys(FIELD_RULES), "company_id"]) setFieldError(name, "");
+  dialogError.hidden = true;
+  dialogError.textContent = "";
+}
+
+function readPayload() {
+  const values = new FormData(form);
+  return {
+    full_name: String(values.get("full_name")).trim(),
+    phone: String(values.get("phone")).trim(),
+    license_number: String(values.get("license_number")).trim(),
+    company_id: Number(values.get("company_id")),
+  };
+}
+
+function validate(payload) {
+  let firstInvalid = null;
+  const fail = (name, message) => {
+    setFieldError(name, message);
+    firstInvalid ??= name;
+  };
+
+  for (const [name, rule] of Object.entries(FIELD_RULES)) {
+    const length = payload[name].length;
+    if (length < rule.min || length > rule.max) {
+      fail(name, `${rule.label}: від ${rule.min} до ${rule.max} символів.`);
+    }
+  }
+  if (!payload.company_id) fail("company_id", "Оберіть перевізника.");
+  return firstInvalid;
+}
+
+function showSaveError(error) {
+  if (!(error instanceof ApiError)) {
+    dialogError.textContent = "Не вдалося виконати запит. Спробуйте ще раз.";
+    dialogError.hidden = false;
+    return;
+  }
+  if (error.status === 422 && error.issues.length > 0) {
+    let unmatched = false;
+    for (const issue of error.issues) {
+      const field = Array.isArray(issue.loc) ? issue.loc[issue.loc.length - 1] : null;
+      if (!setFieldError(field, issue.msg)) unmatched = true;
+    }
+    if (!unmatched) return;
+  }
+  dialogError.textContent = error.message;
+  dialogError.hidden = false;
+}
+
+function openDialog(driver = null) {
+  editingId = driver?.id ?? null;
+  clearErrors();
+  document.querySelector("#dialog-title").textContent = driver ? "Редагувати водія" : "Новий водій";
+  form.elements.full_name.value = driver?.full_name ?? "";
+  form.elements.phone.value = driver?.phone ?? "";
+  form.elements.license_number.value = driver?.license_number ?? "";
+  form.elements.company_id.value = driver ? String(driver.company_id) : "";
+  saveButton.disabled = companies.length === 0;
+  if (companies.length === 0) {
+    dialogError.hidden = false;
+    dialogError.textContent = "Спершу створіть перевізника, щоб додати водія.";
+  }
+  dialog.showModal();
+  form.elements.full_name.focus();
+}
+
+function closeDialog() {
+  dialog.close();
+  clearErrors();
+  editingId = null;
+}
+
+async function deleteDriver(driver) {
+  if (!window.confirm(`Видалити водія ${driver.full_name}? Його допуски до маршрутів буде видалено.`)) return;
+  try {
+    await api.delete(`/drivers/${driver.id}`);
+    showNotice("Водія видалено.");
+  } catch (error) {
+    showNotice(error instanceof ApiError ? error.message : "Не вдалося видалити водія.", "danger");
+  }
+  await loadDrivers();
+}
+
+document.querySelector("#create-driver").addEventListener("click", () => openDialog());
+document.querySelector("#close-dialog").addEventListener("click", closeDialog);
+document.querySelector("#cancel-dialog").addEventListener("click", closeDialog);
+dialog.addEventListener("click", (event) => {
+  if (event.target === dialog) closeDialog();
+});
+
+driversRows.addEventListener("click", (event) => {
+  const button = event.target.closest("button[data-action]");
+  if (!button) return;
+  const driver = drivers.find((item) => item.id === Number(button.dataset.id));
+  if (!driver) return;
+  if (button.dataset.action === "edit") openDialog(driver);
+  if (button.dataset.action === "delete") void deleteDriver(driver);
+});
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (saving || companies.length === 0) return;
+
+  clearErrors();
+  const payload = readPayload();
+  const invalid = validate(payload);
+  if (invalid) {
+    form.elements[invalid].focus();
+    return;
+  }
+
+  const isUpdate = editingId !== null;
+  saving = true;
+  saveButton.disabled = true;
+  try {
+    if (isUpdate) await api.put(`/drivers/${editingId}`, payload);
+    else await api.post("/drivers", payload);
+    closeDialog();
+    showNotice(isUpdate ? "Дані водія оновлено." : "Водія створено.");
+    await loadDrivers();
+  } catch (error) {
+    showSaveError(error);
+  } finally {
+    saving = false;
+    saveButton.disabled = companies.length === 0;
+  }
+});
 
 void loadDrivers();
