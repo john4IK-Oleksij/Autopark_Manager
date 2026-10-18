@@ -1,6 +1,9 @@
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
@@ -33,6 +36,8 @@ app.include_router(drivers_router)
 app.include_router(routes_router)
 app.include_router(driver_routes_router)
 
+FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
+
 
 @app.exception_handler(IntegrityError)
 async def integrity_error_handler(request: Request, exc: IntegrityError):
@@ -61,6 +66,30 @@ def check_database():
             status_code=503,
             detail="Database connection failed",
         )
+
+
+# Статичні ресурси
+for folder in ("css", "js", "static"):
+    folder_path = FRONTEND_DIR / folder
+    if folder_path.is_dir():
+        app.mount(
+            f"/{folder}",
+            StaticFiles(directory=str(folder_path)),
+            name=folder,
+        )
+
+# Головна HTML-сторінка
+@app.get("/", include_in_schema=False)
+def serve_index():
+    return FileResponse(str(FRONTEND_DIR / "index.html"))
+
+# Інші HTML-сторінки
+@app.get("/{page_name}.html", include_in_schema=False)
+def serve_html(page_name: str):
+    page_path = (FRONTEND_DIR / f"{page_name}.html").resolve()
+    if page_path.parent != FRONTEND_DIR.resolve() or not page_path.is_file():
+        raise HTTPException(status_code=404, detail="Page not found")
+    return FileResponse(str(page_path))
 
     
 
