@@ -1,4 +1,12 @@
-const API_BASE_URL = "http://127.0.0.1:8000";
+// Локально фронтенд працює на Live Server (порт 5500), а API — на 8000;
+// на хостингу (Render) API віддає і сторінки, тому адреса та сама.
+const isLocalDev = ["127.0.0.1", "localhost"].includes(window.location.hostname)
+  && window.location.port !== "8000";
+const API_BASE_URL = isLocalDev ? "http://127.0.0.1:8000" : window.location.origin;
+
+document.querySelectorAll('a[href$=":8000/docs"]').forEach((link) => {
+  link.href = `${API_BASE_URL}/docs`;
+});
 
 export class ApiError extends Error {
   constructor(message, status, issues = []) {

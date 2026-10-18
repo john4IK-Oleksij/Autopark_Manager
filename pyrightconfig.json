@@ -1,0 +1,7 @@
+{
+  "include": ["api"],
+  "exclude": ["**/.venv", "**/__pycache__"],
+  "executionEnvironments": [
+    { "root": "api" }
+  ]
+}
