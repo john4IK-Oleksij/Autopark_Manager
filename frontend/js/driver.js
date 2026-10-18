@@ -157,7 +157,7 @@ async function loadRoutes() {
 
 async function loadAll() {
   if (driverId === null) {
-    showFatal("Некоректне посилання: не вказано ID водія.", false);
+    window.location.replace("404.html?reason=link");
     return;
   }
 
@@ -193,7 +193,7 @@ async function loadAll() {
     }
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) {
-      showFatal("Водія не знайдено. Можливо, його вже видалено.", false);
+      window.location.replace("404.html?reason=driver");
     } else {
       showFatal(error instanceof ApiError
         ? error.message

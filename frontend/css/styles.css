@@ -1449,6 +1449,140 @@ a.button--compact {
   }
 }
 
+/* Повноекранний hero з шапкою поверх зображення */
+.header--overlay {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  right: 0;
+  left: 0;
+  width: min(1440px, 100%);
+  margin: 0 auto;
+  padding-right: 52px;
+  padding-left: 52px;
+  box-sizing: border-box;
+  color: var(--color-on-hero);
+}
+
+.header--overlay .nav {
+  color: var(--color-hero-muted);
+}
+
+.header--overlay .nav__link:hover,
+.header--overlay .nav__link.nav__link--active {
+  color: var(--color-primary);
+}
+
+.header--overlay .header__docs {
+  border-color: var(--color-hero-status-border);
+  background: var(--color-hero-status);
+}
+
+.header--overlay .header__docs:hover {
+  border-color: var(--color-primary);
+  background: var(--color-hero-status);
+  color: var(--color-primary);
+}
+
+.hero {
+  min-height: 100vh;
+  min-height: 100svh;
+  border-radius: 0;
+}
+
+.hero__content {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+  padding: 130px 52px 120px max(52px, calc((100% - 1440px) / 2 + 52px));
+}
+
+.hero__bottom {
+  right: max(34px, calc((100% - 1440px) / 2 + 52px));
+  left: max(34px, calc((100% - 1440px) / 2 + 52px));
+}
+
+@media (max-width: 800px) {
+  .header--overlay {
+    padding-right: 24px;
+    padding-left: 24px;
+  }
+
+  .hero__content {
+    padding: 120px 24px 110px;
+  }
+
+  .hero__bottom {
+    right: 24px;
+    left: 24px;
+  }
+}
+
+@media (max-width: 520px) {
+  .header--overlay {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .hero__content {
+    padding: 110px 18px 100px;
+  }
+
+  .hero__bottom {
+    right: 18px;
+    left: 18px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .header--overlay .nav {
+    color: var(--color-muted);
+  }
+
+  .header--overlay .nav__link:hover,
+  .header--overlay .nav__link.nav__link--active {
+    color: var(--color-green-dark);
+  }
+}
+
+/* Повноекранна сторінка помилки */
+.error-page {
+  display: grid;
+  min-height: 100vh;
+  min-height: 100svh;
+  place-items: center;
+  padding: 24px;
+  box-sizing: border-box;
+  background:
+    linear-gradient(0deg, rgb(9 22 22 / 62%), rgb(9 22 22 / 62%)),
+    url("../static/old_error.jpg") center / cover no-repeat;
+  color: var(--color-white);
+  text-align: center;
+}
+
+.error-page__box {
+  max-width: 520px;
+}
+
+.error-page__code {
+  margin: 0;
+  font-size: clamp(72px, 18vw, 140px);
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  line-height: 1;
+}
+
+.error-page__title {
+  margin: 8px 0 12px;
+  font-size: clamp(22px, 4vw, 30px);
+}
+
+.error-page__text {
+  margin: 0 0 28px;
+  color: var(--color-hero-copy);
+  line-height: 1.6;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

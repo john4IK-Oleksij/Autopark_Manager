@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101918">
+    <title>Сторінку не знайдено — Автопарк</title>
+    <link rel="icon" href="/frontend/favicon.ico?v=2" type="image/x-icon" sizes="any">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/frontend/css/styles.css">
+  </head>
+  <body>
+    <main class="error-page">
+      <div class="error-page__box">
+        <p class="error-page__code">404</p>
+        <h1 class="error-page__title" id="error-title">Сторінку не знайдено</h1>
+        <p class="error-page__text" id="error-text">Такої адреси немає або запис уже видалено.</p>
+        <a class="hero__link" href="/frontend/index.html">На головну <span aria-hidden="true">→</span></a>
+      </div>
+    </main>
+    <script>
+      const messages = {
+        driver: ["Водія не знайдено", "Можливо, його вже видалено."],
+        link: ["Некоректне посилання", "У посиланні не вказано коректний ID водія."],
+      };
+      const reason = new URLSearchParams(window.location.search).get("reason");
+      if (messages[reason]) {
+        document.querySelector("#error-title").textContent = messages[reason][0];
+        document.querySelector("#error-text").textContent = messages[reason][1];
+      }
+    </script>
+  </body>
+</html>
