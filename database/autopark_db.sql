@@ -3,10 +3,11 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Paź 18, 2026 at 02:27 PM
+-- Generation Time: Paź 19, 2026 at 03:13 PM
 -- Wersja serwera: 10.4.32-MariaDB
 -- Wersja PHP: 8.2.12
 
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -32,7 +33,7 @@ CREATE TABLE `buses` (
   `model` varchar(80) NOT NULL,
   `seats` int(11) NOT NULL,
   `company_id` int(11) NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `buses`
@@ -81,7 +82,7 @@ CREATE TABLE `companies` (
   `id` int(11) NOT NULL,
   `name` varchar(120) NOT NULL,
   `phone` varchar(20) NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `companies`
@@ -106,7 +107,7 @@ CREATE TABLE `drivers` (
   `phone` varchar(20) NOT NULL,
   `license_number` varchar(20) NOT NULL,
   `company_id` int(11) NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `drivers`
@@ -148,7 +149,7 @@ INSERT INTO `drivers` (`id`, `full_name`, `phone`, `license_number`, `company_id
 CREATE TABLE `driver_routes` (
   `driver_id` int(11) NOT NULL,
   `route_id` int(11) NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `driver_routes`
@@ -244,7 +245,7 @@ CREATE TABLE `routes` (
   `title` varchar(120) NOT NULL,
   `distance_km` int(11) NOT NULL,
   `company_id` int(11) NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `routes`
@@ -318,25 +319,25 @@ ALTER TABLE `routes`
 -- AUTO_INCREMENT for table `buses`
 --
 ALTER TABLE `buses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT for table `companies`
 --
 ALTER TABLE `companies`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `drivers`
 --
 ALTER TABLE `drivers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `routes`
 --
 ALTER TABLE `routes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- Constraints for dumped tables

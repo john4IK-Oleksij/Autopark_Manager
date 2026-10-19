@@ -83,13 +83,20 @@ for folder in ("css", "js", "static"):
 def serve_index():
     return FileResponse(str(FRONTEND_DIR / "index.html"))
 
+
 # Інші HTML-сторінки
 @app.get("/{page_name}.html", include_in_schema=False)
 def serve_html(page_name: str):
     page_path = (FRONTEND_DIR / f"{page_name}.html").resolve()
+
     if page_path.parent != FRONTEND_DIR.resolve() or not page_path.is_file():
-        raise HTTPException(status_code=404, detail="Page not found")
+        return FileResponse(
+            str(FRONTEND_DIR / "404.html"),
+            status_code=404,
+        )
+
     return FileResponse(str(page_path))
+
 
     
 
