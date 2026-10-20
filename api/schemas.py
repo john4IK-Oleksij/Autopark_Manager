@@ -2,7 +2,6 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
-
 # Назви мають містити літеру, телефон — лише цифри та + ( ) -, посвідчення — цифру.
 LETTER_PATTERN = r"\p{L}"
 DIGIT_PATTERN = r"\d"

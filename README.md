@@ -1,3 +1,8 @@
+
+Deploy :  https://autopark-manager.onrender.com/index.html
+
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
 # Autopark — система керування автобусним автопарком
 
 Вебзастосунок для керування перевізниками, автобусами, маршрутами, водіями та допусками водіїв до маршрутів. Backend: FastAPI + SQLAlchemy + MySQL. Frontend: HTML, CSS і JavaScript без обов’язкового frontend-фреймворку.
