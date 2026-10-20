@@ -72,29 +72,28 @@ def check_database():
 for folder in ("css", "js", "static"):
     folder_path = FRONTEND_DIR / folder
     if folder_path.is_dir():
-        app.mount(
-            f"/{folder}",
+        app.mount(f"/{folder}",
             StaticFiles(directory=str(folder_path)),
-            name=folder,
-        )
+            name=folder,)
 
 # Головна HTML-сторінка
 @app.get("/", include_in_schema=False)
 def serve_index():
     return FileResponse(str(FRONTEND_DIR / "index.html"))
 
+@app.get("/favicon.ico", include_in_schema=False)
+def serve_favicon():
+    return FileResponse(str(FRONTEND_DIR / "favicon.ico"))
 
 # Інші HTML-сторінки
 @app.get("/{page_name}.html", include_in_schema=False)
 def serve_html(page_name: str):
     page_path = (FRONTEND_DIR / f"{page_name}.html").resolve()
-
     if page_path.parent != FRONTEND_DIR.resolve() or not page_path.is_file():
         return FileResponse(
             str(FRONTEND_DIR / "404.html"),
             status_code=404,
         )
-
     return FileResponse(str(page_path))
 
 
