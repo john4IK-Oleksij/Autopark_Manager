@@ -67,6 +67,38 @@ export function confirmAction(message, confirmLabel = "Видалити", keepLa
   });
 }
 
+export function showErrorPopup(message) {
+  const dialog = document.createElement("dialog");
+  dialog.className = "dialog confirm";
+  dialog.setAttribute("aria-label", "Помилка видалення");
+
+  const text = document.createElement("p");
+  text.className = "confirm__text";
+  text.textContent = message;
+
+  const cancel = document.createElement("button");
+  cancel.type = "button";
+  cancel.className = "button";
+  cancel.textContent = "Скасувати";
+
+  const actions = document.createElement("div");
+  actions.className = "confirm__actions";
+  actions.append(cancel);
+  dialog.append(text, actions);
+
+  const close = () => {
+    if (dialog.open) dialog.close();
+    dialog.remove();
+  };
+
+  cancel.addEventListener("click", close);
+  dialog.addEventListener("cancel", close);
+
+  document.body.append(dialog);
+  dialog.showModal();
+  cancel.focus();
+}
+
 export function showBanner(message) {
   if (!banner) {
     banner = document.createElement("div");

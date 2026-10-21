@@ -1,5 +1,13 @@
 import { api, ApiError } from "./api.js";
-import { confirmAction, decorateAction, LETTER_PATTERN, PHONE_MESSAGE, PHONE_PATTERN, showBanner } from "./ui.js";
+import {
+  confirmAction,
+  decorateAction,
+  LETTER_PATTERN,
+  PHONE_MESSAGE,
+  PHONE_PATTERN,
+  showBanner,
+  showErrorPopup,
+} from "./ui.js";
 
 const companiesState = document.querySelector("#companies-state");
 const companiesTable = document.querySelector("#companies-table-wrap");
@@ -30,7 +38,9 @@ function appendCell(row, value) {
 function addAction(row, label, action, id, variant = "") {
   const cell = row.lastElementChild ?? row.insertCell();
   const button = document.createElement("button");
-  button.className = variant ? `button button--compact ${variant}` : "button button--compact";
+  button.className = variant
+    ? `button button--compact ${variant}`
+    : "button button--compact";
   button.type = "button";
   button.dataset.action = action;
   button.dataset.id = String(id);
@@ -61,9 +71,10 @@ function renderCompanies() {
   companiesTable.hidden = companies.length === 0;
   companiesState.hidden = companies.length > 0;
   companiesState.dataset.state = companies.length === 0 ? "empty" : "loaded";
-  companiesState.textContent = companies.length === 0
-    ? "Поки немає перевізників. Додайте перший запис."
-    : "";
+  companiesState.textContent =
+    companies.length === 0
+      ? "Поки немає перевізників. Додайте перший запис."
+      : "";
 }
 
 function renderRoutes() {
@@ -73,8 +84,11 @@ function renderRoutes() {
     appendCell(row, route.number);
     appendCell(row, route.title);
     appendCell(row, route.distance_km);
-    appendCell(row, companies.find((company) => company.id === route.company_id)?.name
-      ?? `Перевізник #${route.company_id}`);
+    appendCell(
+      row,
+      companies.find((company) => company.id === route.company_id)?.name ??
+        `Перевізник #${route.company_id}`,
+    );
     addActionsCell(
       row,
       ["Змінити", "edit-route", route.id],
@@ -85,17 +99,17 @@ function renderRoutes() {
   routesTable.hidden = routes.length === 0;
   routesState.hidden = routes.length > 0;
   routesState.dataset.state = routes.length === 0 ? "empty" : "loaded";
-  routesState.textContent = routes.length === 0
-    ? "Поки немає маршрутів. Додайте перший запис."
-    : "";
+  routesState.textContent =
+    routes.length === 0 ? "Поки немає маршрутів. Додайте перший запис." : "";
 }
 
 function showLoadError(state, error) {
   state.hidden = false;
   state.dataset.state = "error";
-  state.textContent = error instanceof ApiError
-    ? error.message
-    : "Не вдалося завантажити дані. Спробуйте ще раз.";
+  state.textContent =
+    error instanceof ApiError
+      ? error.message
+      : "Не вдалося завантажити дані. Спробуйте ще раз.";
 }
 
 async function loadCompanies() {
@@ -170,15 +184,23 @@ const FIELD_RULES = {
     min: 2,
     max: 120,
     pattern: LETTER_PATTERN,
-    patternMessage: "Назва перевізника не може складатися лише з цифр чи символів.",
+    patternMessage:
+      "Назва перевізника не може складатися лише з цифр чи символів.",
   },
-  phone: { label: "Телефон", min: 7, max: 20, pattern: PHONE_PATTERN, patternMessage: PHONE_MESSAGE },
+  phone: {
+    label: "Телефон",
+    min: 7,
+    max: 20,
+    pattern: PHONE_PATTERN,
+    patternMessage: PHONE_MESSAGE,
+  },
   title: {
     label: "Назва маршруту",
     min: 3,
     max: 120,
     pattern: LETTER_PATTERN,
-    patternMessage: "Назва маршруту не може складатися лише з цифр чи символів.",
+    patternMessage:
+      "Назва маршруту не може складатися лише з цифр чи символів.",
   },
 };
 const NUMBER_RULES = {
@@ -196,7 +218,9 @@ function setFieldError(name, message) {
 }
 
 function clearErrors() {
-  form.querySelectorAll("[data-error-for]").forEach((item) => setFieldError(item.dataset.errorFor, ""));
+  form
+    .querySelectorAll("[data-error-for]")
+    .forEach((item) => setFieldError(item.dataset.errorFor, ""));
   dialogError.hidden = true;
   dialogError.textContent = "";
 }
@@ -224,15 +248,22 @@ function validateForm(values) {
       fail(name, `${rule.label}: ціле число від ${rule.min} до ${rule.max}.`);
     }
   }
-  if ("company_id" in values && !values.company_id) fail("company_id", "Оберіть перевізника.");
+  if ("company_id" in values && !values.company_id)
+    fail("company_id", "Оберіть перевізника.");
   return firstInvalid;
 }
 
 function showSaveError(error, resource) {
-  if (error instanceof ApiError && error.status === 422 && error.issues.length > 0) {
+  if (
+    error instanceof ApiError &&
+    error.status === 422 &&
+    error.issues.length > 0
+  ) {
     let unmatched = false;
     for (const issue of error.issues) {
-      const field = Array.isArray(issue.loc) ? issue.loc[issue.loc.length - 1] : null;
+      const field = Array.isArray(issue.loc)
+        ? issue.loc[issue.loc.length - 1]
+        : null;
       if (!setFieldError(field, issue.msg)) unmatched = true;
     }
     if (!unmatched) return;
@@ -241,7 +272,13 @@ function showSaveError(error, resource) {
   dialogError.hidden = false;
 }
 
-function makeField(labelText, name, type, value, { required = true, min, max, options } = {}) {
+function makeField(
+  labelText,
+  name,
+  type,
+  value,
+  { required = true, min, max, options } = {},
+) {
   const wrapper = document.createElement("label");
   wrapper.className = "form__field";
   const label = document.createElement("span");
@@ -252,7 +289,9 @@ function makeField(labelText, name, type, value, { required = true, min, max, op
   fieldError.dataset.errorFor = name;
   fieldError.hidden = true;
 
-  const input = options ? document.createElement("select") : document.createElement("input");
+  const input = options
+    ? document.createElement("select")
+    : document.createElement("input");
   input.className = "form__control";
   input.name = name;
   input.required = required;
@@ -299,22 +338,31 @@ function openDialog(resource, record = null) {
 
   if (isCompany) {
     formFields.append(
-      makeField("Назва перевізника", "name", "text", record?.name, { max: 120 }),
+      makeField("Назва перевізника", "name", "text", record?.name, {
+        max: 120,
+      }),
       makeField("Телефон", "phone", "tel", record?.phone, { max: 20 }),
     );
   } else {
     formFields.append(
-      makeField("Номер маршруту", "number", "number", record?.number, { min: 1 }),
+      makeField("Номер маршруту", "number", "number", record?.number, {
+        min: 1,
+      }),
       makeField("Назва маршруту", "title", "text", record?.title, { max: 120 }),
-      makeField("Відстань, км", "distance_km", "number", record?.distance_km, { min: 1 }),
-      makeField("Перевізник", "company_id", "select", record?.company_id, { options: companies }),
+      makeField("Відстань, км", "distance_km", "number", record?.distance_km, {
+        min: 1,
+      }),
+      makeField("Перевізник", "company_id", "select", record?.company_id, {
+        options: companies,
+      }),
     );
   }
 
   saveButton.disabled = !isCompany && companies.length === 0;
   if (!isCompany && companies.length === 0) {
     dialogError.hidden = false;
-    dialogError.textContent = "Спершу створіть перевізника, щоб додати маршрут.";
+    dialogError.textContent =
+      "Спершу створіть перевізника, щоб додати маршрут.";
   }
   dialog.showModal();
   form.querySelector("input, select")?.focus();
@@ -380,7 +428,7 @@ async function deleteRecord(resource, id) {
 
       // Есть зависимости — сразу popup, без подтверждения.
       if (details.length) {
-        showResourceError(
+        showErrorPopup(
           `Не можна видалити перевізника: ${details.join(", ")}. ` +
             "Спочатку видаліть або перепризначте пов’язані записи.",
         );
@@ -463,9 +511,11 @@ companiesRows.addEventListener("click", (event) => {
   const button = event.target.closest("button[data-action]");
   if (!button) return;
   // >---------------------------
-   console.log("[2] action:", button.dataset.action);
+  console.log("[2] action:", button.dataset.action);
   // >-----------------------
-  const company = companies.find((item) => item.id === Number(button.dataset.id));
+  const company = companies.find(
+    (item) => item.id === Number(button.dataset.id),
+  );
   if (!company) return;
   // >-------------------
   console.log("[3] company:", company);
@@ -473,9 +523,9 @@ companiesRows.addEventListener("click", (event) => {
   if (button.dataset.action === "edit-company") openDialog("company", company);
   if (button.dataset.action === "delete-company")
     // >-------------------
-      console.log("[4] calling deleteRecord");
-    // >-------------------
-    void deleteRecord("company", company.id);
+    console.log("[4] calling deleteRecord");
+  // >-------------------
+  void deleteRecord("company", company.id);
 });
 
 routesRows.addEventListener("click", (event) => {
@@ -484,7 +534,8 @@ routesRows.addEventListener("click", (event) => {
   const route = routes.find((item) => item.id === Number(button.dataset.id));
   if (!route) return;
   if (button.dataset.action === "edit-route") openDialog("route", route);
-  if (button.dataset.action === "delete-route") void deleteRecord("route", route.id);
+  if (button.dataset.action === "delete-route")
+    void deleteRecord("route", route.id);
 });
 
 form.addEventListener("submit", async (event) => {
@@ -498,24 +549,33 @@ form.addEventListener("submit", async (event) => {
     form.elements[invalid].focus();
     return;
   }
-  const payload = editing.resource === "company"
-    ? { name: values.name.trim(), phone: values.phone.trim() }
-    : {
-      number: Number(values.number),
-      title: values.title.trim(),
-      distance_km: Number(values.distance_km),
-      company_id: Number(values.company_id),
-    };
+  const payload =
+    editing.resource === "company"
+      ? { name: values.name.trim(), phone: values.phone.trim() }
+      : {
+          number: Number(values.number),
+          title: values.title.trim(),
+          distance_km: Number(values.distance_km),
+          company_id: Number(values.company_id),
+        };
   const path = `/${editing.resource === "company" ? "companies" : "routes"}`;
   const isUpdate = editing.id !== null;
   saveButton.disabled = true;
   dialogError.hidden = true;
   try {
-    await (isUpdate ? api.put(`${path}/${editing.id}`, payload) : api.post(path, payload));
+    await (isUpdate
+      ? api.put(`${path}/${editing.id}`, payload)
+      : api.post(path, payload));
     dialog.close();
-    showNotice(editing.resource === "company"
-      ? (isUpdate ? "Перевізника оновлено." : "Перевізника створено.")
-      : (isUpdate ? "Маршрут оновлено." : "Маршрут створено."));
+    showNotice(
+      editing.resource === "company"
+        ? isUpdate
+          ? "Перевізника оновлено."
+          : "Перевізника створено."
+        : isUpdate
+          ? "Маршрут оновлено."
+          : "Маршрут створено.",
+    );
     if (editing.resource === "company") {
       await loadCompanies();
       await loadRoutes();
