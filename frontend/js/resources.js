@@ -9,6 +9,8 @@ const routesTable = document.querySelector("#routes-table-wrap");
 const routesRows = document.querySelector("#routes-rows");
 const notice = document.querySelector("#resource-notice");
 const dialog = document.querySelector("#resource-dialog");
+const resourceErrorDialog = document.querySelector("#resource-error-dialog");
+const resourceErrorMessage = document.querySelector("#resource-error-message");
 const form = document.querySelector("#resource-form");
 const formFields = document.querySelector("#form-fields");
 const dialogError = document.querySelector("#dialog-error");
@@ -131,6 +133,11 @@ function showNotice(message, variant = "success") {
   notice.hidden = false;
   notice.dataset.variant = variant;
   notice.textContent = message;
+}
+
+function showResourceError(message) {
+  resourceErrorMessage.textContent = message;
+  resourceErrorDialog.showModal();
 }
 
 function getErrorMessage(error, resource) {
@@ -317,7 +324,7 @@ async function deleteRecord(resource, id) {
       await loadRoutes();
     }
   } catch (error) {
-    showNotice(getErrorMessage(error, resource), "danger");
+    showResourceError(getErrorMessage(error, resource));
     if (isCompany) {
       await loadCompanies();
     } else {
@@ -398,6 +405,8 @@ function closeDialog() {
 
 document.querySelector("#close-dialog").addEventListener("click", closeDialog);
 document.querySelector("#cancel-dialog").addEventListener("click", closeDialog);
+document.querySelector("#close-resource-error").addEventListener("click", () => resourceErrorDialog.close());
+document.querySelector("#dismiss-resource-error").addEventListener("click", () => resourceErrorDialog.close());
 dialog.addEventListener("click", (event) => {
   if (event.target === dialog) closeDialog();
 });
