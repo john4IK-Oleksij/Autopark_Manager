@@ -139,16 +139,29 @@ async function loadRoutes() {
   }
 }
 
+// function showNotice(message, variant = "success") {
+//   if (variant === "success") {
+//     notice.hidden = true;
+//     showBanner(message);
+//     return;
+//   }
+//   notice.hidden = false;
+//   notice.dataset.variant = variant;
+//   notice.textContent = message;
+// }
+
+// >---------------------
 function showNotice(message, variant = "success") {
+  notice.hidden = true;
+  notice.textContent = "";
   if (variant === "success") {
-    notice.hidden = true;
     showBanner(message);
-    return;
+  } else {
+    showErrorPopup(message);
   }
-  notice.hidden = false;
-  notice.dataset.variant = variant;
-  notice.textContent = message;
 }
+// >---------------
+
 
 function showResourceError(message) {
   notice.hidden = true;
