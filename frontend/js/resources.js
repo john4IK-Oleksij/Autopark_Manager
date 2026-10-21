@@ -319,17 +319,91 @@ function openDialog(resource, record = null) {
   dialog.showModal();
   form.querySelector("input, select")?.focus();
 }
-
+// >--------------------
 
 async function deleteRecord(resource, id) {
   const isCompany = resource === "company";
-  const record = (isCompany ? companies : routes).find((item) => item.id === id);
-  const label = isCompany ? record?.name : "маршрут №" + record?.number;
-  if (!(await confirmAction("Видалити " + (label ?? "цей запис") + "?"))) return;
+
+  const record = (isCompany ? companies : routes).find(
+    (item) => Number(item.id) === Number(id),
+  );
+
+  const label = isCompany ? record?.name : `маршрут №${record?.number}`;
+
+  // Сценарий 1: сначала проверяем связанные записи.
+  if (isCompany) {
+    try {
+      const [buses, routes, firstDriversPage] = await Promise.all([
+        api.get("/buses"),
+        api.get("/routes"),
+        api.get("/drivers?limit=100&offset=0"),
+      ]);
+
+      const companyBuses = buses.filter(
+        (bus) => Number(bus.company_id) === Number(id),
+      );
+
+      const companyRoutes = routes.filter(
+        (route) => Number(route.company_id) === Number(id),
+      );
+
+      let companyDrivers = firstDriversPage.items.filter(
+        (driver) => Number(driver.company_id) === Number(id),
+      );
+
+      const total = firstDriversPage.total;
+      const limit = firstDriversPage.limit;
+
+      for (let offset = limit; offset < total; offset += limit) {
+        const page = await api.get(`/drivers?limit=${limit}&offset=${offset}`);
+
+        companyDrivers = companyDrivers.concat(
+          page.items.filter(
+            (driver) => Number(driver.company_id) === Number(id),
+          ),
+        );
+      }
+
+      const details = [];
+
+      if (companyBuses.length) {
+        details.push(`автобусів: ${companyBuses.length}`);
+      }
+
+      if (companyDrivers.length) {
+        details.push(`водіїв: ${companyDrivers.length}`);
+      }
+
+      if (companyRoutes.length) {
+        details.push(`маршрутів: ${companyRoutes.length}`);
+      }
+
+      // Есть зависимости — сразу popup, без подтверждения.
+      if (details.length) {
+        showResourceError(
+          `Не можна видалити перевізника: ${details.join(", ")}. ` +
+            "Спочатку видаліть або перепризначте пов’язані записи.",
+        );
+        return;
+      }
+    } catch (error) {
+      showResourceError(
+        "Не вдалося перевірити пов’язані записи. Видалення скасовано.",
+      );
+      return;
+    }
+  }
+
+  // Сценарий 2: зависимости не найдены — показываем свой диалог.
+  const confirmed = await confirmAction(`Видалити ${label ?? "цей запис"}?`);
+
+  if (!confirmed) return;
 
   try {
     await api.delete(`/${isCompany ? "companies" : "routes"}/${id}`);
+
     showNotice(isCompany ? "Перевізника видалено." : "Маршрут видалено.");
+
     if (isCompany) {
       await loadCompanies();
       await loadRoutes();
@@ -337,26 +411,71 @@ async function deleteRecord(resource, id) {
       await loadRoutes();
     }
   } catch (error) {
+    // Серверная защита: например, HTTP 409 при изменившихся зависимостях.
     showResourceError(getErrorMessage(error, resource));
+
     if (isCompany) {
       await loadCompanies();
+      await loadRoutes();
     } else {
       await loadRoutes();
     }
   }
 }
 
+// >--------------------
+// async function deleteRecord(resource, id) {
+//   // >-------------------------------
+//   console.log("[5] deleteRecord started", { resource, id });
+//   // >-------------------------------
+//   const isCompany = resource === "company";
+//   const record = (isCompany ? companies : routes).find((item) => item.id === id);
+//   const label = isCompany ? record?.name : "маршрут №" + record?.number;
+//   if (!(await confirmAction("Видалити " + (label ?? "цей запис") + "?"))) return;
+
+//   try {
+//     await api.delete(`/${isCompany ? "companies" : "routes"}/${id}`);
+//     showNotice(isCompany ? "Перевізника видалено." : "Маршрут видалено.");
+//     if (isCompany) {
+//       await loadCompanies();
+//       await loadRoutes();
+//     } else {
+//       await loadRoutes();
+//     }
+//   } catch (error) {
+//     showResourceError(getErrorMessage(error, resource));
+//     if (isCompany) {
+//       await loadCompanies();
+//     } else {
+//       await loadRoutes();
+//     }
+//   }
+// }
+
 document.querySelectorAll("[data-create]").forEach((button) => {
   button.addEventListener("click", () => openDialog(button.dataset.create));
 });
 
 companiesRows.addEventListener("click", (event) => {
+  // >-------------------
+  console.log("[1] click handler fired");
+  // >-----------------------
   const button = event.target.closest("button[data-action]");
   if (!button) return;
+  // >---------------------------
+   console.log("[2] action:", button.dataset.action);
+  // >-----------------------
   const company = companies.find((item) => item.id === Number(button.dataset.id));
   if (!company) return;
+  // >-------------------
+  console.log("[3] company:", company);
+  // >-------------------
   if (button.dataset.action === "edit-company") openDialog("company", company);
-  if (button.dataset.action === "delete-company") void deleteRecord("company", company.id);
+  if (button.dataset.action === "delete-company")
+    // >-------------------
+      console.log("[4] calling deleteRecord");
+    // >-------------------
+    void deleteRecord("company", company.id);
 });
 
 routesRows.addEventListener("click", (event) => {
