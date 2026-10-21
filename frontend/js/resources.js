@@ -9,12 +9,13 @@ const routesTable = document.querySelector("#routes-table-wrap");
 const routesRows = document.querySelector("#routes-rows");
 const notice = document.querySelector("#resource-notice");
 const dialog = document.querySelector("#resource-dialog");
-const resourceErrorDialog = document.querySelector("#resource-error-dialog");
-const resourceErrorMessage = document.querySelector("#resource-error-message");
 const form = document.querySelector("#resource-form");
 const formFields = document.querySelector("#form-fields");
 const dialogError = document.querySelector("#dialog-error");
 const saveButton = document.querySelector("#save-resource");
+const cancelButton = document.querySelector("#cancel-dialog");
+const dialogTitle = document.querySelector("#dialog-title");
+const dialogKicker = document.querySelector("#dialog-kicker");
 
 let companies = [];
 let routes = [];
@@ -136,8 +137,18 @@ function showNotice(message, variant = "success") {
 }
 
 function showResourceError(message) {
-  resourceErrorMessage.textContent = message;
-  resourceErrorDialog.showModal();
+  notice.hidden = true;
+  notice.textContent = "";
+  editing = null;
+  formFields.replaceChildren();
+  dialogKicker.textContent = "Помилка";
+  dialogTitle.textContent = "Не вдалося видалити";
+  dialogError.textContent = message;
+  dialogError.hidden = false;
+  cancelButton.hidden = true;
+  saveButton.hidden = true;
+  dialog.showModal();
+  document.querySelector("#close-dialog").focus();
 }
 
 function getErrorMessage(error, resource) {
@@ -276,12 +287,14 @@ function makeField(labelText, name, type, value, { required = true, min, max, op
 function openDialog(resource, record = null) {
   editing = { resource, id: record?.id ?? null };
   const isCompany = resource === "company";
-  document.querySelector("#dialog-kicker").textContent = isCompany ? "Перевізники" : "Маршрутна мережа";
-  document.querySelector("#dialog-title").textContent = record
+  dialogKicker.textContent = isCompany ? "Перевізники" : "Маршрутна мережа";
+  dialogTitle.textContent = record
     ? `Редагувати ${isCompany ? "перевізника" : "маршрут"}`
     : `Новий ${isCompany ? "перевізник" : "маршрут"}`;
   dialogError.hidden = true;
   dialogError.textContent = "";
+  cancelButton.hidden = false;
+  saveButton.hidden = false;
   formFields.replaceChildren();
 
   if (isCompany) {
@@ -405,8 +418,6 @@ function closeDialog() {
 
 document.querySelector("#close-dialog").addEventListener("click", closeDialog);
 document.querySelector("#cancel-dialog").addEventListener("click", closeDialog);
-document.querySelector("#close-resource-error").addEventListener("click", () => resourceErrorDialog.close());
-document.querySelector("#dismiss-resource-error").addEventListener("click", () => resourceErrorDialog.close());
 dialog.addEventListener("click", (event) => {
   if (event.target === dialog) closeDialog();
 });
