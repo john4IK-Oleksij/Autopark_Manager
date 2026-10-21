@@ -369,107 +369,103 @@ function openDialog(resource, record = null) {
 }
 // >--------------------
 
-async function deleteRecord(resource, id) {
-  const isCompany = resource === "company";
+// async function deleteRecord(resource, id) {
+//   const isCompany = resource === "company";
 
-  const record = (isCompany ? companies : routes).find(
-    (item) => Number(item.id) === Number(id),
-  );
+//   const record = (isCompany ? companies : routes).find(
+//     (item) => Number(item.id) === Number(id),
+//   );
 
-  const label = isCompany ? record?.name : `маршрут №${record?.number}`;
+//   const label = isCompany ? record?.name : `маршрут №${record?.number}`;
 
-  // Сценарий 1: сначала проверяем связанные записи.
-  if (isCompany) {
-    try {
-      const [buses, routes, firstDriversPage] = await Promise.all([
-        api.get("/buses"),
-        api.get("/routes"),
-        api.get("/drivers?limit=100&offset=0"),
-      ]);
+//   if (isCompany) {
+//     try {
+//       const [buses, routes, firstDriversPage] = await Promise.all([
+//         api.get("/buses"),
+//         api.get("/routes"),
+//         api.get("/drivers?limit=100&offset=0"),
+//       ]);
 
-      const companyBuses = buses.filter(
-        (bus) => Number(bus.company_id) === Number(id),
-      );
+//       const companyBuses = buses.filter(
+//         (bus) => Number(bus.company_id) === Number(id),
+//       );
 
-      const companyRoutes = routes.filter(
-        (route) => Number(route.company_id) === Number(id),
-      );
+//       const companyRoutes = routes.filter(
+//         (route) => Number(route.company_id) === Number(id),
+//       );
 
-      let companyDrivers = firstDriversPage.items.filter(
-        (driver) => Number(driver.company_id) === Number(id),
-      );
+//       let companyDrivers = firstDriversPage.items.filter(
+//         (driver) => Number(driver.company_id) === Number(id),
+//       );
 
-      const total = firstDriversPage.total;
-      const limit = firstDriversPage.limit;
+//       const total = firstDriversPage.total;
+//       const limit = firstDriversPage.limit;
 
-      for (let offset = limit; offset < total; offset += limit) {
-        const page = await api.get(`/drivers?limit=${limit}&offset=${offset}`);
+//       for (let offset = limit; offset < total; offset += limit) {
+//         const page = await api.get(`/drivers?limit=${limit}&offset=${offset}`);
 
-        companyDrivers = companyDrivers.concat(
-          page.items.filter(
-            (driver) => Number(driver.company_id) === Number(id),
-          ),
-        );
-      }
+//         companyDrivers = companyDrivers.concat(
+//           page.items.filter(
+//             (driver) => Number(driver.company_id) === Number(id),
+//           ),
+//         );
+//       }
 
-      const details = [];
+//       const details = [];
 
-      if (companyBuses.length) {
-        details.push(`автобусів: ${companyBuses.length}`);
-      }
+//       if (companyBuses.length) {
+//         details.push(`автобусів: ${companyBuses.length}`);
+//       }
 
-      if (companyDrivers.length) {
-        details.push(`водіїв: ${companyDrivers.length}`);
-      }
+//       if (companyDrivers.length) {
+//         details.push(`водіїв: ${companyDrivers.length}`);
+//       }
 
-      if (companyRoutes.length) {
-        details.push(`маршрутів: ${companyRoutes.length}`);
-      }
+//       if (companyRoutes.length) {
+//         details.push(`маршрутів: ${companyRoutes.length}`);
+//       }
 
-      // Есть зависимости — сразу popup, без подтверждения.
-      if (details.length) {
-        showErrorPopup(
-          `Не можна видалити перевізника: ${details.join(", ")}. ` +
-            "Спочатку видаліть або перепризначте пов’язані записи.",
-        );
-        return;
-      }
-    } catch (error) {
-      showResourceError(
-        "Не вдалося перевірити пов’язані записи. Видалення скасовано.",
-      );
-      return;
-    }
-  }
+//       if (details.length) {
+//         showErrorPopup(
+//           `Не можна видалити перевізника: ${details.join(", ")}. ` +
+//             "Спочатку видаліть або перепризначте пов’язані записи.",
+//         );
+//         return;
+//       }
+//     } catch (error) {
+//       showResourceError(
+//         "Не вдалося перевірити пов’язані записи. Видалення скасовано.",
+//       );
+//       return;
+//     }
+//   }
 
-  // Сценарий 2: зависимости не найдены — показываем свой диалог.
-  const confirmed = await confirmAction(`Видалити ${label ?? "цей запис"}?`);
+//   const confirmed = await confirmAction(`Видалити ${label ?? "цей запис"}?`);
 
-  if (!confirmed) return;
+//   if (!confirmed) return;
 
-  try {
-    await api.delete(`/${isCompany ? "companies" : "routes"}/${id}`);
+//   try {
+//     await api.delete(`/${isCompany ? "companies" : "routes"}/${id}`);
 
-    showNotice(isCompany ? "Перевізника видалено." : "Маршрут видалено.");
+//     showNotice(isCompany ? "Перевізника видалено." : "Маршрут видалено.");
 
-    if (isCompany) {
-      await loadCompanies();
-      await loadRoutes();
-    } else {
-      await loadRoutes();
-    }
-  } catch (error) {
-    // Серверная защита: например, HTTP 409 при изменившихся зависимостях.
-    showResourceError(getErrorMessage(error, resource));
+//     if (isCompany) {
+//       await loadCompanies();
+//       await loadRoutes();
+//     } else {
+//       await loadRoutes();
+//     }
+//   } catch (error) {
+//     showResourceError(getErrorMessage(error, resource));
 
-    if (isCompany) {
-      await loadCompanies();
-      await loadRoutes();
-    } else {
-      await loadRoutes();
-    }
-  }
-}
+//     if (isCompany) {
+//       await loadCompanies();
+//       await loadRoutes();
+//     } else {
+//       await loadRoutes();
+//     }
+//   }
+// }
 
 // >--------------------
 // async function deleteRecord(resource, id) {
@@ -499,7 +495,96 @@ async function deleteRecord(resource, id) {
 //     }
 //   }
 // }
+// >-----------------------
+async function fetchAllDrivers() {
+  const limit = 100;
+  const first = await api.get(`/drivers?limit=${limit}&offset=0`);
+  let items = first.items;
+  for (
+    let offset = first.limit ?? limit;
+    offset < first.total;
+    offset += first.limit ?? limit
+  ) {
+    const page = await api.get(`/drivers?limit=${limit}&offset=${offset}`);
+    items = items.concat(page.items);
+  }
+  return items;
+}
 
+async function reloadAfterChange(isCompany) {
+  if (isCompany) {
+    await loadCompanies();
+    await loadRoutes();
+  } else {
+    await loadRoutes();
+  }
+}
+
+async function deleteRecord(resource, id) {
+  console.log("deleteRecord", resource, id); // debug, potim mozhna prybraty
+
+  const isCompany = resource === "company";
+  const record = (isCompany ? companies : routes).find(
+    (item) => Number(item.id) === Number(id),
+  );
+  const label = isCompany ? record?.name : `маршрут №${record?.number}`;
+
+  // 1. Pereviryaiemo zalezhnosti tilky dlia perevizynyka
+  if (isCompany) {
+    try {
+      const [allBuses, allRoutes, allDrivers] = await Promise.all([
+        api.get("/buses"),
+        api.get("/routes"),
+        fetchAllDrivers(),
+      ]);
+
+      const sameCompany = (item) => Number(item.company_id) === Number(id);
+      const busCount = allBuses.filter(sameCompany).length;
+      const routeCount = allRoutes.filter(sameCompany).length;
+      const driverCount = allDrivers.filter(sameCompany).length;
+
+      const details = [];
+      if (busCount) details.push(`автобусів: ${busCount}`);
+      if (driverCount) details.push(`водіїв: ${driverCount}`);
+      if (routeCount) details.push(`маршрутів: ${routeCount}`);
+
+      if (details.length) {
+        showErrorPopup(
+          `Не можна видалити перевізника: ${details.join(", ")}. ` +
+            "Спочатку видаліть або перепризначте пов’язані записи.",
+        );
+        return;
+      }
+    } catch (error) {
+      console.error("dependency check failed", error);
+      showErrorPopup(
+        "Не вдалося перевірити пов’язані записи. Видалення скасовано.",
+      );
+      return;
+    }
+  }
+
+  // 2. Zalezhnostej nemaje: pytaiemo pidtverdzhennia
+  const confirmed = await confirmAction(`Видалити ${label ?? "цей запис"}?`);
+  if (!confirmed) return;
+
+  // 3. Vydaliaiemo
+  try {
+    await api.delete(`/${isCompany ? "companies" : "routes"}/${id}`);
+    showNotice(isCompany ? "Перевізника видалено." : "Маршрут видалено.");
+  } catch (error) {
+    console.error("delete failed", error);
+    const message = getErrorMessage(error, resource);
+    if (error instanceof ApiError && error.status === 409) {
+      showErrorPopup(message);
+    } else {
+      showResourceError(message);
+    }
+  }
+
+  await reloadAfterChange(isCompany);
+}
+// >-------------------------
 document.querySelectorAll("[data-create]").forEach((button) => {
   button.addEventListener("click", () => openDialog(button.dataset.create));
 });
