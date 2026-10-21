@@ -74,16 +74,17 @@ export function showErrorPopup(message) {
 
   const text = document.createElement("p");
   text.className = "confirm__text";
+  text.setAttribute("role", "alert");
   text.textContent = message;
 
-  const cancel = document.createElement("button");
-  cancel.type = "button";
-  cancel.className = "button";
-  cancel.textContent = "Скасувати";
+  const closeButton = document.createElement("button");
+  closeButton.type = "button";
+  closeButton.className = "button";
+  closeButton.textContent = "Закрити";
 
   const actions = document.createElement("div");
   actions.className = "confirm__actions";
-  actions.append(cancel);
+  actions.append(closeButton);
   dialog.append(text, actions);
 
   const close = () => {
@@ -91,12 +92,12 @@ export function showErrorPopup(message) {
     dialog.remove();
   };
 
-  cancel.addEventListener("click", close);
+  closeButton.addEventListener("click", close);
   dialog.addEventListener("cancel", close);
 
   document.body.append(dialog);
   dialog.showModal();
-  cancel.focus();
+  closeButton.focus();
 }
 
 export function showBanner(message) {
