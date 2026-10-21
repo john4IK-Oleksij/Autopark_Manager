@@ -303,77 +303,13 @@ function openDialog(resource, record = null) {
 
 async function deleteRecord(resource, id) {
   const isCompany = resource === "company";
-  const record = (isCompany ? companies : routes).find(
-    (item) => item.id === id
-  );
-  const label = isCompany
-    ? record?.name
-    : `маршрут №${record?.number}`;
-  if (isCompany) {
-    try {
-      const [buses, routes, firstDriversPage] = await Promise.all([
-        api.get("/buses"),
-        api.get("/routes"),
-        api.get("/drivers?limit=100&offset=0"),
-      ]);
-      const companyBuses = buses.filter(
-        (bus) => bus.company_id === id
-      );
-      const companyRoutes = routes.filter(
-        (route) => route.company_id === id
-      );
-      let companyDrivers = firstDriversPage.items.filter(
-        (driver) => driver.company_id === id
-      );
-      const total = firstDriversPage.total;
-      const limit = firstDriversPage.limit;
-      for (let offset = limit; offset < total; offset += limit) {
-        const page = await api.get(
-          `/drivers?limit=${limit}&offset=${offset}`
-        );
-        companyDrivers = companyDrivers.concat(
-          page.items.filter((driver) => driver.company_id === id)
-        );
-      }
-      if (
-        companyBuses.length ||
-        companyDrivers.length ||
-        companyRoutes.length
-      ) {
-        const details = [];
-        if (companyBuses.length) {
-          details.push(`автобусів: ${companyBuses.length}`);
-        }
-        if (companyDrivers.length) {
-          details.push(`водіїв: ${companyDrivers.length}`);
-        }
-        if (companyRoutes.length) {
-          details.push(`маршрутів: ${companyRoutes.length}`);
-        }
-        showNotice(
-          `Не можна видалити перевізника: ${details.join(", ")}. Спочатку видаліть або перепризначте пов’язані записи.`,
-          "danger"
-        );
-        return;
-      }
-    } catch (error) {
-      showNotice(
-        "Не вдалося перевірити пов’язані записи. Видалення скасовано.",
-        "danger"
-      );
-      return;
-    }
-  }
-  if (!(await confirmAction(`Видалити ${label ?? "цей запис"}?`))) {
-    return;
-  }
+  const record = (isCompany ? companies : routes).find((item) => item.id === id);
+  const label = isCompany ? record?.name : "маршрут №" + record?.number;
+  if (!(await confirmAction("Видалити " + (label ?? "цей запис") + "?"))) return;
+
   try {
-    await api.delete(
-      `/${isCompany ? "companies" : "routes"}/${id}`
-    );
-    showNotice(
-      isCompany ? "Перевізника видалено." : "Маршрут видалено."
-    );
+    await api.delete(`/${isCompany ? "companies" : "routes"}/${id}`);
+    showNotice(isCompany ? "Перевізника видалено." : "Маршрут видалено.");
     if (isCompany) {
       await loadCompanies();
       await loadRoutes();
