@@ -72,13 +72,13 @@ class Driver(Base):
         nullable=False,
     )
     company: Mapped[Company] = relationship(back_populates="drivers")
-
-    @property
-    def company_name(self) -> str:
-        return self.company.name
     driver_routes: Mapped[list[DriverRoute]] = relationship(
         back_populates="driver",
     )
+    @property
+    def company_name(self) -> str:
+        return self.company.name
+   
 
 
 class DriverRoute(Base):
