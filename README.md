@@ -1,5 +1,6 @@
 
-Deploy :  https://autopark-manager.onrender.com/index.html
+Deploy : https://autoparkmanager.up.railway.app
+Deploy (Render) : https://autopark-manager.onrender.com/index.html
 
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
