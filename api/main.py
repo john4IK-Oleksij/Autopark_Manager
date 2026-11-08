@@ -1,3 +1,5 @@
+import sys
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
@@ -7,27 +9,42 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
-from database import engine
+# Додаємо директорію api в sys.path для підтримки запусків з будь-якого каталогу
+API_DIR = Path(__file__).resolve().parent
+if str(API_DIR) not in sys.path:
+    sys.path.insert(0, str(API_DIR))
+
+from database import Base, engine
+import models
 from routers.buses import router as buses_router
 from routers.companies import router as companies_router
 from routers.driver_routes import router as driver_routes_router
 from routers.drivers import router as drivers_router
 from routers.routes import router as routes_router
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as exc:
+        print(f"[DB Startup] Notice: {exc}")
+    yield
+
+
 app = FastAPI(
     title="Autopark API",
     description="API для керування автобусним автопарком м.Одеси",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://127.0.0.1:5500",
-        "http://localhost:5500",
-    ],
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
-    allow_headers=["Accept", "Content-Type"],
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(companies_router)
@@ -36,7 +53,9 @@ app.include_router(drivers_router)
 app.include_router(routes_router)
 app.include_router(driver_routes_router)
 
-FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
+# Пошук каталогу frontend
+_parent_frontend = API_DIR.parent / "frontend"
+FRONTEND_DIR = _parent_frontend if _parent_frontend.is_dir() else (API_DIR / "frontend")
 
 
 @app.exception_handler(IntegrityError)
@@ -72,9 +91,11 @@ def check_database():
 for folder in ("css", "js", "static"):
     folder_path = FRONTEND_DIR / folder
     if folder_path.is_dir():
-        app.mount(f"/{folder}",
+        app.mount(
+            f"/{folder}",
             StaticFiles(directory=str(folder_path)),
-            name=folder,)
+            name=folder,
+        )
 
 # Головна HTML-сторінка
 @app.get("/", include_in_schema=False)
@@ -95,9 +116,3 @@ def serve_html(page_name: str):
             status_code=404,
         )
     return FileResponse(str(page_path))
-
-
-    
-
-
-
