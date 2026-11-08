@@ -21,12 +21,14 @@ from routers.companies import router as companies_router
 from routers.driver_routes import router as driver_routes_router
 from routers.drivers import router as drivers_router
 from routers.routes import router as routes_router
+from seed import seed_database_if_empty
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
         Base.metadata.create_all(bind=engine)
+        seed_database_if_empty(engine)
     except Exception as exc:
         print(f"[DB Startup] Notice: {exc}")
     yield
